@@ -45,15 +45,19 @@
 
     <v-card-actions>
       <v-btn text>Detalles</v-btn>
-      <v-btn text>Button</v-btn>
+      <v-btn v-on:click="getData" text>Data</v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
 export default {
-  name: "CardCliente",
-
-  data: () => ({})
+    name: "CardCliente",
+    methods : {
+        getData() {
+            fetch("http://api.dashboard.test/api/data").then((data)=>data.json()).then((data)=>console.log(data));
+        }
+    },
+    data: () => ({})
 };
 </script>
