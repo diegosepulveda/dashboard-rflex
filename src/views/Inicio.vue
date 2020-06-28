@@ -30,25 +30,25 @@
       dark
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Application</v-toolbar-title>
+      <v-toolbar-title>rFlex Dash</v-toolbar-title>
     </v-app-bar>
 
     <v-main>
       <v-container
       >
         <v-row>
-          <v-col>
-              <card-cliente></card-cliente>
+          <v-col md="6" sm="12" lg="4">
+              <card-cliente clinica='tabancura'>Tabancura</card-cliente>
           </v-col>
-          <v-col>
-              <card-cliente></card-cliente>
+          <v-col md="6" lg="4">
+              <card-cliente clinica='clc'>CLC</card-cliente>
           </v-col>
-          <v-col>
-              <card-cliente></card-cliente>
+          <v-col md="6" lg="4">
+              <card-cliente clinica='stamaria'>Santa Maria</card-cliente>
           </v-col>
-          <v-col>
+          <!-- <v-col>
               <card-cliente></card-cliente>
-          </v-col>
+          </v-col> -->
         </v-row>
       </v-container>
     </v-main>
