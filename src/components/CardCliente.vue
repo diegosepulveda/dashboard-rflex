@@ -60,24 +60,41 @@
                 <tr><td>turnoContratoNull</td> <td>2</td></tr>
                 <tr><td>erroresCambioTurno</td> <td>13</td></tr>
               </table>
-          </v-col>
-          <v-col>
-              <table>
-                <tr><td>ausenciaTipoPermisoFueraRangoPermiso</td> <td>4</td></tr>
-                <tr><td>duplicadosPermisos</td> <td>0</td></tr>
-                <tr><td>duplicadosAlta</td> <td>0</td></tr>
-                <tr><td>duplicadosPermisosResumen</td> <td>1</td></tr>
-                <tr><td>duplicadosPersonaRflex</td> <td>6</td></tr>
-                <tr><td>duplicadosTurnos</td> <td>3</td></tr>
-                <tr><td>InconsistenciasMarcaPagoReloj</td> <td>6</td></tr>
-                <tr><td>turnoContratoNull</td> <td>2</td></tr>
-                <tr><td>erroresCambioTurno</td> <td>13</td></tr>
-              </table>
           </v-col> -->
       </v-row>
+      <v-row>
+          <v-col>
+                  <v-chip v-for="(objIntegracion) in cliente.integraciones" :key="objIntegracion.nombre" class="ma-2" x-small v-bind:class="{ success: objIntegracion.activo }"  >{{objIntegracion.nombre}}</v-chip>
+                  
+          </v-col>
+      </v-row>
+
+
+    
+    <v-dialog
+        v-model="dialog3"
+        max-width="500px"
+      >
+        <v-card>
+          <v-card-title>
+            <span>Dialog 3</span>
+            <v-spacer></v-spacer>
+          </v-card-title>
+          <v-card-actions>
+            <v-btn
+              color="primary"
+              text
+              @click="dialog3 = false"
+            >
+              Close
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
 
     <v-card-actions>
-      <v-btn text>Detalles</v-btn>
+      <v-btn text @click="dialog3 = true">Detalles</v-btn>
       <v-btn v-on:click="getData" text>Data</v-btn>
     </v-card-actions>
   </v-card>
@@ -87,22 +104,23 @@
 export default {
     name: "CardCliente",
     props : {
-        'clinica' : String
+        'cliente' : Object
     },
     methods : {
         getData() {
-            console.log(this.clinica)
+            console.log(this.cliente.nombre)
             // fetch("http://api.dashboard.test/api/data").then((data)=>data.json()).then((data)=>console.log(data));
         }
     },
     mounted : function() {
-        fetch("http://api.dashboard.test/api/inconsistencias?clinica="+this.clinica).then((data)=>data.json()).then((data)=>this.listaInconsistencia = data)
+        fetch("http://api.dashboard.test/api/inconsistencias?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaInconsistencia = data)
 
 
-        fetch("http://api.dashboard.test/api/marcas?clinica="+this.clinica).then((data)=>data.json()).then((data)=>this.listaUltimasMarcas = data)
+        fetch("http://api.dashboard.test/api/marcas?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaUltimasMarcas = data)
     },
     data: () => ({
         tab: null,
+        dialog3: false,
         listaUltimasMarcas : [],
         listaInconsistencia : [],
         items: [
