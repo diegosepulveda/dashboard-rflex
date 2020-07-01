@@ -1,34 +1,5 @@
 <template>
   <v-card class="mx-auto" max-width="1000" outlined>
-        <!-- <v-sheet elevation="6"> -->
-            <!-- <v-tabs
-            background-color="cyan"
-            dark
-            v-model="tab"
-            next-icon="mdi-arrow-right-bold-box-outline"
-            prev-icon="mdi-arrow-left-bold-box-outline"
-            show-arrows
-            >
-            <v-tabs-slider color="yellow"></v-tabs-slider>
-            <v-tab
-                v-for="i in 30"
-                :key="i"
-                :href="'#tab-' + i"
-            >
-                Item {{ i }}
-            </v-tab>
-            </v-tabs>
-            <v-tabs-items v-model="tab">
-                <v-tab-item
-                    v-for="item in items"
-                    :key="item.tab"
-                >
-                    <v-card flat>
-                    <v-card-text>{{ item.content }}</v-card-text>
-                    </v-card>
-                </v-tab-item>
-            </v-tabs-items> -->
-        <!-- </v-sheet> -->
         <v-row>
             <v-col style="padding: 0px;">
                 <slot></slot>
@@ -48,19 +19,6 @@
                 </tr>
               </table>
           </v-col>
-          <!-- <v-col>
-              <table>
-                <tr><td>ausenciaTipoPermisoFueraRangoPermiso</td> <td>4</td></tr>
-                <tr><td>duplicadosPermisos</td> <td>0</td></tr>
-                <tr><td>duplicadosAlta</td> <td>0</td></tr>
-                <tr><td>duplicadosPermisosResumen</td> <td>1</td></tr>
-                <tr><td>duplicadosPersonaRflex</td> <td>6</td></tr>
-                <tr><td>duplicadosTurnos</td> <td>3</td></tr>
-                <tr><td>InconsistenciasMarcaPagoReloj</td> <td>6</td></tr>
-                <tr><td>turnoContratoNull</td> <td>2</td></tr>
-                <tr><td>erroresCambioTurno</td> <td>13</td></tr>
-              </table>
-          </v-col> -->
       </v-row>
       <v-row>
           <v-col>
@@ -72,30 +30,69 @@
 
     
     <v-dialog
-        v-model="dialog3"
-        max-width="500px"
+        v-model="modalUso"
+        max-width="1200px"
       >
         <v-card>
           <v-card-title>
-            <span>Dialog 3</span>
+            <span>Uso unidades</span>
             <v-spacer></v-spacer>
           </v-card-title>
+          <v-card-text>
+                <v-data-table
+                    :headers="headersListaUsoUnidades"
+                    :items="listaLoginUnidadesSemanaTabla"
+                    :items-per-page="20"
+                    class="elevation-1"
+                ></v-data-table>
+
+          </v-card-text>
           <v-card-actions>
             <v-btn
               color="primary"
               text
-              @click="dialog3 = false"
+              @click="modalUso = false"
             >
               Close
             </v-btn>
           </v-card-actions>
         </v-card>
-      </v-dialog>
+    </v-dialog>
+
+    <v-dialog
+        v-model="modalErorres"
+        max-width="1200px"
+      >
+        <v-card>
+          <v-card-title>
+            <span>Errores</span>
+            <v-spacer></v-spacer>
+          </v-card-title>
+          <v-card-text>
+                <v-data-table
+                    :headers="headersListaErrores"
+                    :items="listaErroresPorFecha"
+                    :items-per-page="20"
+                    class="elevation-1"
+                ></v-data-table>
+
+          </v-card-text>
+          <v-card-actions>
+            <v-btn
+              color="primary"
+              text
+              @click="modalErorres = false"
+            >
+              Close
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+    </v-dialog>
 
 
     <v-card-actions>
-      <v-btn text @click="dialog3 = true">Detalles</v-btn>
-      <v-btn v-on:click="getData" text>Data</v-btn>
+      <v-btn text @click="modalUso = true">Uso</v-btn>
+      <v-btn text @click="modalErorres = true">Errores</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -114,15 +111,38 @@ export default {
     },
     mounted : function() {
         fetch("http://api.dashboard.test/api/inconsistencias?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaInconsistencia = data)
-
-
         fetch("http://api.dashboard.test/api/marcas?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaUltimasMarcas = data)
+        fetch("http://api.dashboard.test/api/logunidad?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaLoginUnidadesSemanaTabla = data)
+        fetch("http://api.dashboard.test/api/errores?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaErroresPorFecha = data)
     },
     data: () => ({
         tab: null,
-        dialog3: false,
+        modalUso: false,
+        modalErorres: false,
         listaUltimasMarcas : [],
+        listaLoginUnidadesSemanaTabla : [],
+        listaErroresPorFecha : [],
         listaInconsistencia : [],
+        headersListaUsoUnidades: [
+          {
+            text: 'Nombre Unidad',
+            align: 'start',
+            sortable: false,
+            value: 'nombreUnidad',
+          },
+          { text: 'ID Unidad', value: 'unidad_idunidad' },
+          { text: 'Dias', value: 'diasNumeros' },
+          { text: 'Nombre Dia', value: 'diasNombres' },
+          { text: 'Semana Año', value: 'numeroSemanaAño' },
+          { text: 'Cantidad', value: 'cantidadDias' },
+          { text: 'Fecha', value: 'fecha' },
+          { text: 'Semana', value: 'semana' },
+          { text: 'Actualizacion', value: 'horaActualizacion' },
+        ],
+        headersListaErrores: [
+          { text: 'Fecha', value: 'fecha' },
+          { text: 'Cuenta', value: 'cuenta' },
+        ],
         items: [
           { tab: 'One', content: 'Tab 1 Content' },
           { tab: 'Two', content: 'Tab 2 Content' },
