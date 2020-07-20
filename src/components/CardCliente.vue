@@ -1,15 +1,16 @@
 <template>
-  <v-card class="mx-auto" max-width="1000" outlined>
+  <v-card class="mx-auto piloto" max-width="1000" outlined :color="colorCard">
         <v-row>
-            <v-col style="padding: 0px;">
+            <v-col style="padding: padding">
                 <slot></slot>
             </v-col>
         </v-row>
         <v-row>
           <v-col>
-                <li v-for="(item) in listaUltimasMarcas" :key="item.RUT_FUNCIONARIO + item.FECHA_MARCA + item.HORA_MARCA">
+                <li v-for="(item) in listaUltimasMarcas" :key="item.RUT_FUNCIONARIO + item.FECHA_MARCA + item.HORA_MARCA + item.SENTIDO_MARCA">
                     {{ item.FECHA_MARCA }} {{ item.HORA_MARCA }}
                 </li>
+				{{diegocolor}}
           </v-col>
           <v-col>
               <table>
@@ -22,8 +23,9 @@
       </v-row>
       <v-row>
           <v-col>
-                  <v-chip v-for="(objIntegracion) in cliente.integraciones" :key="objIntegracion.nombre" class="ma-2" x-small v-bind:class="{ success: objIntegracion.activo }"  >{{objIntegracion.nombre}}</v-chip>
-                  
+                <v-chip v-for="(objIntegracion, nombre) in cliente.integraciones" :key="objIntegracion.nombre" class="ma-2" x-small v-bind:class="{ success: objIntegracion }"  >{{nombre}}</v-chip>
+
+                <!-- <v-chip  class="ma-2 red" text-color="white" small>{{listaErroresPorFecha[0].cuenta}}</v-chip> -->
           </v-col>
       </v-row>
 
@@ -69,12 +71,6 @@
             <v-spacer></v-spacer>
           </v-card-title>
           <v-card-text>
-                <!-- <v-data-table
-                    :headers="headersListaErrores"
-                    :items="listaErroresPorFecha"
-                    :items-per-page="20"
-                    class="elevation-1"
-                ></v-data-table> -->
                <bar :lista-data="listaErroresPorFecha" titulo-grafico="Lista Errores"></bar>
           </v-card-text>
           <v-card-actions>
@@ -93,6 +89,7 @@
     <v-card-actions>
       <v-btn text @click="modalUso = true">Uso</v-btn>
       <v-btn text @click="modalErorres = true">Errores</v-btn>
+		<v-btn text @click="getData">Cambiar Color</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -107,11 +104,33 @@ export default {
     },
     props : {
         'cliente' : Object
-    },
+	},
+	computed : {
+		colorCard : {
+			get: function () {
+				if(this.cliente.estado === 'piloto')
+				{
+					return '#26c6da'
+				}
+				return undefined;
+			},
+			set: function (newValue) {
+				return newValue;
+			}
+		}
+	},
     methods : {
         getData() {
-            console.log(this.cliente.nombre)
-            // fetch("http://api.dashboard.test/api/data").then((data)=>data.json()).then((data)=>console.log(data));
+			if(this.diegocolor == '#26c6da')
+			{
+				this.diegocolor = undefined
+			}
+			else
+			{
+				this.diegocolor = '#26c6da'
+			}
+			console.log(this.diegocolor);
+			
         }
     },
     mounted : function() {
@@ -122,6 +141,7 @@ export default {
     },
     data: () => ({
         tab: null,
+        diegocolor: undefined,
         modalUso: false,
         modalErorres: false,
         listaUltimasMarcas : [],
@@ -155,4 +175,5 @@ export default {
     table{
     font-size: 13px;
 }
+
 </style>
