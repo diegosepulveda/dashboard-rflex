@@ -30,7 +30,7 @@
       <v-container>
         <v-row>		
 			<v-col v-for="objCliente in listaClientes" :key="objCliente.id" md="6" sm="12" lg="4">
-				<card-cliente :cliente="objCliente"  >{{objCliente.nombre}}</card-cliente>
+				<card-cliente :cliente="objCliente">{{objCliente.nombreCompleto}}</card-cliente>
 			</v-col>
         </v-row>
       </v-container>
@@ -43,6 +43,8 @@
 
 <script>
 import CardCliente from "@/components/CardCliente.vue";
+import _ from 'lodash'
+
 
 export default {
   props: {
@@ -52,7 +54,34 @@ export default {
     CardCliente
   },
 	mounted : function() {
-	fetch("http://api.dashboard.test/api/lista-clientes").then((data)=>data.json()).then((data)=>this.listaClientes = data)
+		let vm = this; //this con arrow function funciona, pero sin se tiene que hacer esto
+		fetch("http://api.dashboard.test/api/lista-clientes").then(
+			// (data) => data.json()
+			function(data) {
+				return data.json()
+			}
+		).then(
+			// (data) => this.listaClientes = data
+			// (datos) => {
+			// 	console.log(this);
+			// 	return this.listaClientes = datos;
+			// }
+			function(datos) {
+
+				fetch("http://api.dashboard.test/api/replica-masiva").then((data)=>data.json()).then(function(listaClientesReplicas){
+					vm.listaClientes.forEach(element => {
+						// var objCliente = _.find(listaClientesReplicas,{'nombre' : element.nombre}).replica
+						element.replica = _.find(listaClientesReplicas,{'nombre' : element.nombre}).replica;
+						// console.log(_.find(listaClientesReplicas,{'nombre' : element.nombre}).replica)
+					});
+					console.log(listaClientesReplicas);
+					console.log(vm.listaClientes);
+				});
+				vm.listaClientes = datos;
+
+				
+			}
+		);
 	},
   data: () => ({
     drawer: false,
