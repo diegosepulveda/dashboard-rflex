@@ -74,8 +74,7 @@ export default {
 						element.replica = _.find(listaClientesReplicas,{'nombre' : element.nombre}).replica;
 						// console.log(_.find(listaClientesReplicas,{'nombre' : element.nombre}).replica)
 					});
-					console.log(listaClientesReplicas);
-					console.log(vm.listaClientes);
+					
 				});
 				vm.listaClientes = datos;
 
