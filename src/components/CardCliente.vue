@@ -7,7 +7,7 @@
         </v-row>
         <v-row>
           <v-col>
-                <li v-for="(item) in listaUltimasMarcas" :key="item.RUT_FUNCIONARIO + item.FECHA_MARCA + item.HORA_MARCA + item.SENTIDO_MARCA" v-bind:class="{ errorMarca: item.posibleError }" >
+                <li v-for="(item, index) in listaUltimasMarcas" :key="index" v-bind:class="{ errorMarca: item.posibleError }" >
                     {{ item.FECHA_MARCA }} {{ item.HORA_MARCA }}
                 </li>
           </v-col>
@@ -137,7 +137,6 @@
 								></v-data-table>
 							</v-tab-item>
 						</v-tabs-items>
-
 				</v-row>
           </v-card-text>
           <v-card-actions>
@@ -178,11 +177,11 @@
 
 
     <v-card-actions>
-		<v-btn text @click="modalUso = true">Uso Unidades</v-btn>
-		<v-btn text @click="modalUsoTotalTipoUsuario = true">Uso Jefaturas</v-btn>
-		<v-btn text @click="getData">Uso Web</v-btn>
-		<v-btn text @click="getData">Uso Mobile</v-btn>
-		<v-btn text @click="modalErorres = true">Errores</v-btn>
+		<v-btn text @click="abrirModalUsoUnidades()">Uso Unidades</v-btn>
+		<v-btn text @click="abrirModalUsoTotal()">Uso Total</v-btn>
+		<!-- <v-btn text @click="getData">Uso Web</v-btn>
+		<v-btn text @click="getData">Uso Mobile</v-btn> -->
+		<v-btn text @click="abrirModalErrores()">Errores</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -200,23 +199,46 @@ export default {
         'cliente' : Object
 	},
 	computed : {
-		colorCard : {
-			get: function () {
-				if(this.cliente.estado === 'piloto')
-				{
-					return '#B2DFDB'
-				}
-				return undefined;
-			},
-			set: function (newValue) {
-				return newValue;
+		colorCard : function(){
+			if(this.cliente.estado === 'piloto')
+			{
+				return '#B2DFDB'
 			}
+			return undefined;
 		}
 	},
     methods : {
-        getData() {
-			
-        }
+        abrirModalUsoTotal() {
+			this.modalUsoTotalTipoUsuario = true;
+			let vm = this;
+			fetch("http://api.dashboard.test/api/uso-total?cliente="+this.cliente.nombre).then((data)=>data.json()).then(function(data) {
+				vm.listaUsoCompleta = data
+
+				
+				vm.listaUsoJefatura = _.filter(data,{'tipo_segun_nombre': 'jefatura'});
+				vm.listaUsoGerencia = _.filter(data,{'tipo_segun_nombre': 'gerencia'});
+				vm.listaUsoJefaturaRRHH = _.filter(data,{'tipo_segun_nombre': 'jefatura_rrhh'});
+				vm.listaUsoUsuario = _.filter(data,{'tipo_segun_nombre': 'usuario'});
+				vm.listaUsoRflex = _.filter(data,{'tipo_segun_nombre': 'rFlex'});
+				console.log(data);
+
+
+				vm.listaNumeroSemanaAño = _.uniq(_.map(data,'numeroSemanaAño')).sort(function(a,b){return b-a})
+				if(vm.listaNumeroSemanaAño.length > 0)
+				{
+					vm.seleccionSemana = vm.listaNumeroSemanaAño[0]
+				}
+			});
+		},
+		abrirModalErrores() {
+			this.modalErorres = true
+			fetch("http://api.dashboard.test/api/errores?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaErroresPorFecha = data)
+
+		},
+		abrirModalUsoUnidades() {
+			this.modalUso = true
+			fetch("http://api.dashboard.test/api/logunidad?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaLoginUnidadesSemanaTabla = data)
+		}
 	},
 	watch: {
 		seleccionSemana: function (val) {			
@@ -228,31 +250,8 @@ export default {
 		}
 	},
     mounted : function() {
-		let vm = this;
         fetch("http://api.dashboard.test/api/inconsistencias?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaInconsistencia = data)
         fetch("http://api.dashboard.test/api/marcas?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaUltimasMarcas = data)
-		fetch("http://api.dashboard.test/api/logunidad?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaLoginUnidadesSemanaTabla = data)
-		
-		fetch("http://api.dashboard.test/api/uso-total?cliente="+this.cliente.nombre).then((data)=>data.json()).then(function(data) {
-			vm.listaUsoCompleta = data
-
-			
-			vm.listaUsoJefatura = _.filter(data,{'tipo_segun_nombre': 'jefatura'});
-			vm.listaUsoGerencia = _.filter(data,{'tipo_segun_nombre': 'gerencia'});
-			vm.listaUsoJefaturaRRHH = _.filter(data,{'tipo_segun_nombre': 'jefatura_rrhh'});
-			vm.listaUsoUsuario = _.filter(data,{'tipo_segun_nombre': 'usuario'});
-			vm.listaUsoRflex = _.filter(data,{'tipo_segun_nombre': 'rFlex'});
-			console.log(data);
-
-
-			vm.listaNumeroSemanaAño = _.uniq(_.map(data,'numeroSemanaAño')).sort(function(a,b){return b-a})
-			if(vm.listaNumeroSemanaAño.length > 0)
-			{
-				vm.seleccionSemana = vm.listaNumeroSemanaAño[0]
-			}
-		});
-		
-        fetch("http://api.dashboard.test/api/errores?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaErroresPorFecha = data)
     },
     data: () => ({
         tab: null,
