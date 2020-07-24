@@ -26,8 +26,6 @@
 				<v-chip v-if="cliente.replica === false" class="ma-2 red" text-color="white" x-small>Error Replica</v-chip>
           </v-col>
       </v-row>
-
-
     
     <v-dialog
         v-model="modalUso"
@@ -231,13 +229,25 @@ export default {
 			});
 		},
 		abrirModalErrores() {
+			var direccion = window.location.href;
+			var ruta = "api.dashboard.test";
+			if(direccion.includes('kindall'))
+			{
+				ruta = "api.dashboard.kindall.io";
+			}
 			this.modalErorres = true
-			fetch("http://api.dashboard.test/api/errores?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaErroresPorFecha = data)
+			fetch("http://"+ruta+"/api/errores?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaErroresPorFecha = data)
 
 		},
 		abrirModalUsoUnidades() {
+			var direccion = window.location.href;
+			var ruta = "api.dashboard.test";
+			if(direccion.includes('kindall'))
+			{
+				ruta = "api.dashboard.kindall.io";
+			}
 			this.modalUso = true
-			fetch("http://api.dashboard.test/api/logunidad?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaLoginUnidadesSemanaTabla = data)
+			fetch("http://"+ruta+"/api/logunidad?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaLoginUnidadesSemanaTabla = data)
 		}
 	},
 	watch: {
@@ -250,8 +260,15 @@ export default {
 		}
 	},
     mounted : function() {
-        fetch("http://api.dashboard.test/api/inconsistencias?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaInconsistencia = data)
-        fetch("http://api.dashboard.test/api/marcas?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaUltimasMarcas = data)
+		var direccion = window.location.href;
+		var ruta = "api.dashboard.test";
+		if(direccion.includes('kindall'))
+		{
+			ruta = "api.dashboard.kindall.io";
+		}
+
+        fetch("http://"+ruta+"/api/inconsistencias?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaInconsistencia = data)
+        fetch("http://"+ruta+"/api/marcas?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaUltimasMarcas = data)
     },
     data: () => ({
         tab: null,

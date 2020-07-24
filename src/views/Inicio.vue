@@ -1,6 +1,6 @@
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer v-model="drawer" app>
+    <v-navigation-drawer v-model="sidebar" app>
       <v-list dense>
         <v-list-item link>
           <v-list-item-action>
@@ -22,7 +22,7 @@
     </v-navigation-drawer>
 
     <v-app-bar app color="indigo" dark>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click.stop="sidebar = !sidebar"></v-app-bar-nav-icon>
       <v-toolbar-title>rFlex Dash</v-toolbar-title>
     </v-app-bar>
 
@@ -54,59 +54,32 @@ export default {
     CardCliente
   },
 	mounted : function() {
+		var direccion = window.location.href;
+		var ruta = "api.dashboard.test";
+		if(direccion.includes('kindall'))
+		{
+			ruta = "api.dashboard.kindall.io";
+		}
 		let vm = this; //this con arrow function funciona, pero sin se tiene que hacer esto
-		fetch("http://api.dashboard.test/api/lista-clientes").then(
-			// (data) => data.json()
+		fetch("http://"+ruta+"/api/lista-clientes").then(
 			function(data) {
 				return data.json()
 			}
 		).then(
-			// (data) => this.listaClientes = data
-			// (datos) => {
-			// 	console.log(this);
-			// 	return this.listaClientes = datos;
-			// }
 			function(datos) {
-
-				fetch("http://api.dashboard.test/api/replica-masiva").then((data)=>data.json()).then(function(listaClientesReplicas){
+				fetch("http://"+ruta+"/api/replica-masiva").then((data)=>data.json()).then(function(listaClientesReplicas){
 					vm.listaClientes.forEach(element => {
-						// var objCliente = _.find(listaClientesReplicas,{'nombre' : element.nombre}).replica
 						element.replica = _.find(listaClientesReplicas,{'nombre' : element.nombre}).replica;
-						// console.log(_.find(listaClientesReplicas,{'nombre' : element.nombre}).replica)
 					});
 					
 				});
 				vm.listaClientes = datos;
-
-				
 			}
 		);
 	},
   data: () => ({
-    drawer: false,
-	dialog3: false,
+	sidebar: false,
 	listaClientes : [],
-    listaClientes2: [
-		{
-			id : 1,
-			nombre: 'davila',
-			integraciones : [
-				{
-					nombre : 'alta',
-					activo : true
-				},
-				{
-					nombre : 'permisos',
-					activo : false
-				},
-				{
-					nombre : 'marcas',
-					activo : false
-				}
-			],
-			holding: false
-		},
-	]
   })
 };
 </script>
