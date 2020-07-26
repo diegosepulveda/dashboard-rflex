@@ -41,11 +41,20 @@
             <v-spacer></v-spacer>
           </v-card-title>
           <v-card-text>
+				<v-row v-if="!ocultarInformacionYMostrarSpinner">
+					<v-col>
+						<v-progress-circular
+							indeterminate
+							color="primary"
+						></v-progress-circular>
+					</v-col>
+				</v-row>
                 <v-data-table
                     :headers="headersListaUsoUnidades"
                     :items="listaLoginUnidadesSemanaTabla"
                     :items-per-page="20"
                     class="elevation-1"
+					v-if="ocultarInformacionYMostrarSpinner"
                 ></v-data-table>
 
           </v-card-text>
@@ -67,11 +76,11 @@
       >
         <v-card>
           <v-card-title>
-            <span>Uso unidades</span>
+            <span>Uso total usuarios</span>
             <v-spacer></v-spacer>
           </v-card-title>
           <v-card-text>
-				<v-row v-if="!mostrarDatosUsoTotalTipoUsuario">
+				<v-row v-if="!ocultarInformacionYMostrarSpinner">
 					<v-col>
 						<v-progress-circular
 							indeterminate
@@ -79,7 +88,7 @@
 						></v-progress-circular>
 					</v-col>
 				</v-row>
-				<v-row v-if="mostrarDatosUsoTotalTipoUsuario">
+				<v-row v-if="ocultarInformacionYMostrarSpinner">
 					<v-col md="3">
 						<v-combobox
 							v-model="seleccionSemana"
@@ -88,7 +97,7 @@
 							></v-combobox>
 					</v-col>
 				</v-row>
-				<v-row v-if="mostrarDatosUsoTotalTipoUsuario">
+				<v-row v-if="ocultarInformacionYMostrarSpinner">
 
 					<v-tabs
 						v-model="tab"
@@ -221,10 +230,10 @@ export default {
         abrirModalUsoTotal() {
 			this.modalUsoTotalTipoUsuario = true
 			let vm = this;
-			vm.mostrarDatosUsoTotalTipoUsuario = false
+			vm.ocultarInformacionYMostrarSpinner = false
 			fetch("http://api.dashboard.test/api/uso-total?cliente="+this.cliente.nombre).then((data)=>data.json()).then(function(data) {
 				vm.listaUsoCompleta = data
-				vm.mostrarDatosUsoTotalTipoUsuario = true
+				vm.ocultarInformacionYMostrarSpinner = true
 
 				
 				vm.listaUsoJefatura = _.filter(data,{'tipo_segun_nombre': 'jefatura'});
@@ -255,13 +264,22 @@ export default {
 		},
 		abrirModalUsoUnidades() {
 			var direccion = window.location.href;
+			let vm = this;
 			var ruta = "api.dashboard.test";
 			if(direccion.includes('kindall'))
 			{
 				ruta = "api.dashboard.kindall.io";
 			}
 			this.modalUso = true
-			fetch("http://"+ruta+"/api/logunidad?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaLoginUnidadesSemanaTabla = data)
+			vm.ocultarInformacionYMostrarSpinner = false
+			fetch("http://"+ruta+"/api/logunidad?cliente="+this.cliente.nombre).then((data)=>data.json()).then(
+				function(data){
+					vm.listaLoginUnidadesSemanaTabla = data
+					vm.ocultarInformacionYMostrarSpinner = true
+				}
+
+
+			)
 		}
 	},
 	watch: {
@@ -326,7 +344,7 @@ export default {
         tab: null,
         modalUso: false,
         ultimaMarcaTiempo: false,
-        mostrarDatosUsoTotalTipoUsuario: false,
+        ocultarInformacionYMostrarSpinner: false,
         seleccionSemana: '',
         modalErorres: false,
         modalUsoTotalTipoUsuario: false,
