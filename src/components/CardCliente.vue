@@ -5,9 +5,13 @@
                 <slot></slot>
             </v-col>
         </v-row>
+		<v-row class="letraChica">
+			<v-col>Ultima marca hace </v-col>
+			<v-col v-bind:class="{ errorMarcaWarning: ultimaMarcaTiempo.tipoAdvertencia === 'warning',errorMarcaDanger: ultimaMarcaTiempo.tipoAdvertencia === 'danger' }" >{{ultimaMarcaTiempo.cantidad}}</v-col>
+		</v-row>
         <v-row>
           <v-col>
-                <li v-for="(item, index) in listaUltimasMarcas" :key="index" v-bind:class="{ errorMarca: item.posibleError }" >
+                <li class="letraChica"  v-for="(item, index) in listaUltimasMarcas" :key="index" v-bind:class="{ errorMarca: item.posibleError }" >
                     {{ item.FECHA_MARCA }} {{ item.HORA_MARCA }}
                 </li>
           </v-col>
@@ -260,6 +264,7 @@ export default {
 		}
 	},
     mounted : function() {
+		let vm = this;
 		var direccion = window.location.href;
 		var ruta = "api.dashboard.test";
 		if(direccion.includes('kindall'))
@@ -268,11 +273,49 @@ export default {
 		}
 
         fetch("http://"+ruta+"/api/inconsistencias?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaInconsistencia = data)
-        fetch("http://"+ruta+"/api/marcas?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaUltimasMarcas = data)
+        fetch("http://"+ruta+"/api/marcas?cliente="+this.cliente.nombre).then((data)=>data.json()).then(
+				function(data) {
+					vm.listaUltimasMarcas = data;
+					if(data.length > 0)
+					{
+						var diferenciaHoraria = data[0].diferencia;
+						
+						var diferenciaTotalSegundos = diferenciaHoraria.split(':').map(function(data,indice){
+							if(indice === 0) {
+								return parseInt(data)*60*60
+							}
+							if(indice === 1) {
+								return parseInt(data)*60
+							}
+							return parseInt(data)
+
+						}).reduce(function(valorAnterior, valorActual){
+							return valorAnterior + valorActual;
+						});
+
+						vm.ultimaMarcaTiempo = {
+							'tipoAdvertencia' : null,
+							'cantidad' : ''
+						}
+
+						if(diferenciaTotalSegundos > 43200 && diferenciaTotalSegundos < 86400)
+						{
+							vm.ultimaMarcaTiempo.tipoAdvertencia = 'warning';
+						}
+						else if(diferenciaTotalSegundos > 86400)
+						{
+							vm.ultimaMarcaTiempo.tipoAdvertencia = 'danger';
+						}
+
+						vm.ultimaMarcaTiempo.cantidad = window.moment.duration(diferenciaTotalSegundos,"seconds").humanize()
+					}
+				}
+			)
     },
     data: () => ({
         tab: null,
         modalUso: false,
+        ultimaMarcaTiempo: false,
         seleccionSemana: '',
         modalErorres: false,
         modalUsoTotalTipoUsuario: false,
@@ -342,12 +385,26 @@ export default {
 </script>
 <style scoped>
 table{
-    font-size: 13px;
+    font-size: 11px;
+}
+
+.letraChica{
+    font-size: 11px;
 }
 
 .errorMarca{
 	color : red;
 }
 
+.errorMarcaWarning{
+	color :darkorange;
+	font-weight: bold;
+}
+
+.errorMarcaDanger{
+	color : red;
+	font-weight: bold;
+
+}
 
 </style>

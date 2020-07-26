@@ -27,16 +27,16 @@
     </v-app-bar>
 
     <v-main>
-      <v-container>
+      <v-container fluid>
         <v-row>		
-			<v-col v-for="objCliente in listaClientes" :key="objCliente.id" md="6" sm="12" lg="4">
+			<v-col v-for="objCliente in listaClientes" :key="objCliente.id" md="6" sm="12" lg="3">
 				<card-cliente :cliente="objCliente">{{objCliente.nombreCompleto}}</card-cliente>
 			</v-col>
         </v-row>
       </v-container>
     </v-main>
     <v-footer color="indigo" app>
-      <span class="white--text">&copy; 2019</span>
+      <span class="white--text">&copy; 2020</span>
     </v-footer>
   </v-app>
 </template>
