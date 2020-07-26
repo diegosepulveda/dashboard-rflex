@@ -71,7 +71,15 @@
             <v-spacer></v-spacer>
           </v-card-title>
           <v-card-text>
-				<v-row>
+				<v-row v-if="!mostrarDatosUsoTotalTipoUsuario">
+					<v-col>
+						<v-progress-circular
+							indeterminate
+							color="primary"
+						></v-progress-circular>
+					</v-col>
+				</v-row>
+				<v-row v-if="mostrarDatosUsoTotalTipoUsuario">
 					<v-col md="3">
 						<v-combobox
 							v-model="seleccionSemana"
@@ -80,7 +88,7 @@
 							></v-combobox>
 					</v-col>
 				</v-row>
-				<v-row>
+				<v-row v-if="mostrarDatosUsoTotalTipoUsuario">
 
 					<v-tabs
 						v-model="tab"
@@ -211,10 +219,12 @@ export default {
 	},
     methods : {
         abrirModalUsoTotal() {
-			this.modalUsoTotalTipoUsuario = true;
+			this.modalUsoTotalTipoUsuario = true
 			let vm = this;
+			vm.mostrarDatosUsoTotalTipoUsuario = false
 			fetch("http://api.dashboard.test/api/uso-total?cliente="+this.cliente.nombre).then((data)=>data.json()).then(function(data) {
 				vm.listaUsoCompleta = data
+				vm.mostrarDatosUsoTotalTipoUsuario = true
 
 				
 				vm.listaUsoJefatura = _.filter(data,{'tipo_segun_nombre': 'jefatura'});
@@ -316,6 +326,7 @@ export default {
         tab: null,
         modalUso: false,
         ultimaMarcaTiempo: false,
+        mostrarDatosUsoTotalTipoUsuario: false,
         seleccionSemana: '',
         modalErorres: false,
         modalUsoTotalTipoUsuario: false,
