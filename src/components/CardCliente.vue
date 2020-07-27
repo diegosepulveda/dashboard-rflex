@@ -77,6 +77,7 @@
         <v-card>
           <v-card-title>
             <span>Uso total usuarios</span>
+            <span class="letraChica errorMarcaDanger">{{mostrarError}}</span>
             <v-spacer></v-spacer>
           </v-card-title>
           <v-card-text>
@@ -230,6 +231,7 @@ export default {
         abrirModalUsoTotal() {
 			this.modalUsoTotalTipoUsuario = true
 			let vm = this;
+			vm.mostrarError = ''
 			vm.ocultarInformacionYMostrarSpinner = false
 			fetch("http://api.dashboard.test/api/uso-total?cliente="+this.cliente.nombre).then((data)=>data.json()).then(function(data) {
 				vm.listaUsoCompleta = data
@@ -249,6 +251,9 @@ export default {
 				{
 					vm.seleccionSemana = vm.listaNumeroSemanaAño[0]
 				}
+			}).catch(function(error) {
+				vm.mostrarError = 'Hubo un problema con la petición Fetch:' + error
+				console.log('Hubo un problema con la petición Fetch:' + error);
 			});
 		},
 		abrirModalErrores() {
@@ -343,6 +348,7 @@ export default {
     data: () => ({
         tab: null,
         modalUso: false,
+        mostrarError: '',
         ultimaMarcaTiempo: false,
         ocultarInformacionYMostrarSpinner: false,
         seleccionSemana: '',
