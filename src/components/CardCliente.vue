@@ -231,6 +231,12 @@ export default {
         abrirModalUsoTotal() {
 			this.modalUsoTotalTipoUsuario = true
 			let vm = this;
+			var direccion = window.location.href;
+			var ruta = "api.dashboard.test";
+			if(direccion.includes('kindall'))
+			{
+				ruta = "api.dashboard.kindall.io";
+			}
 			vm.mostrarError = ''
 			vm.ocultarInformacionYMostrarSpinner = false
 			fetch("http://"+ruta+"/api/uso-total?cliente="+this.cliente.nombre).then((data)=>data.json()).then(function(data) {
