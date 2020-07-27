@@ -233,7 +233,7 @@ export default {
 			let vm = this;
 			vm.mostrarError = ''
 			vm.ocultarInformacionYMostrarSpinner = false
-			fetch("http://api.dashboard.test/api/uso-total?cliente="+this.cliente.nombre).then((data)=>data.json()).then(function(data) {
+			fetch("http://"+ruta+"/api/uso-total?cliente="+this.cliente.nombre).then((data)=>data.json()).then(function(data) {
 				vm.listaUsoCompleta = data
 				vm.ocultarInformacionYMostrarSpinner = true
 
