@@ -5,15 +5,34 @@
                 <slot></slot>
             </v-col>
         </v-row>
-		<v-row class="letraChica">
+		<!-- <v-row class="letraChica">
 			<v-col>Ultima marca hace </v-col>
-			<v-col v-bind:class="{ errorMarcaWarning: ultimaMarcaTiempo.tipoAdvertencia === 'warning',errorMarcaDanger: ultimaMarcaTiempo.tipoAdvertencia === 'danger' }" >{{ultimaMarcaTiempo.cantidad}}</v-col>
+			<v-col  >{{ultimaMarcaTiempo.cantidad}}</v-col>
 		</v-row>
+		<v-row class="letraChica">
+			<v-col>Ultima alta hace </v-col>
+			<v-col v-bind:class="{ errorMarcaWarning: ultimaMarcaTiempo.tipoAdvertencia === 'warning',errorMarcaDanger: ultimaMarcaTiempo.tipoAdvertencia === 'danger' }" >{{ultimaAltaTiempo.cantidad}}</v-col>
+		</v-row>
+		<v-row class="letraChica">
+			<v-col>Ultima permiso hace </v-col>
+			<v-col v-bind:class="{ errorMarcaWarning: ultimaMarcaTiempo.tipoAdvertencia === 'warning',errorMarcaDanger: ultimaMarcaTiempo.tipoAdvertencia === 'danger' }" >{{ultimoPermisoTiempo.cantidad}}</v-col>
+		</v-row> -->
         <v-row>
-          <v-col>
-                <li class="letraChica"  v-for="(item, index) in listaUltimasMarcas" :key="index" v-bind:class="{ errorMarca: item.posibleError }" >
+          <v-col class="letraChica">
+                <!-- <li class="letraChica"  v-for="(item, index) in listaUltimasMarcas" :key="index" v-bind:class="{ errorMarca: item.posibleError }" >
                     {{ item.FECHA_MARCA }} {{ item.HORA_MARCA }}
-                </li>
+                </li> -->
+			<ul>
+				<li style="text-align: start;">
+					Alta: <span v-bind:class="{ errorMarcaWarning: ultimaAltaTiempo.tipoAdvertencia === 'warning',errorMarcaDanger: ultimaAltaTiempo.tipoAdvertencia === 'danger' }">{{ultimaAltaTiempo.cantidad || '-'}}</span> 
+				</li>
+				<li style="text-align: start;">
+					Permiso: <span v-bind:class="{ errorMarcaWarning: ultimoPermisoTiempo.tipoAdvertencia === 'warning',errorMarcaDanger: ultimaMarcaTiempo.tipoAdvertencia === 'danger' }">{{ultimoPermisoTiempo.cantidad  || '-'}}</span> 
+				</li>
+				<li style="text-align: start;">
+					Marca: <span v-bind:class="{ errorMarcaWarning: ultimaMarcaTiempo.tipoAdvertencia === 'warning',errorMarcaDanger: ultimaMarcaTiempo.tipoAdvertencia === 'danger' }">{{ultimaMarcaTiempo.cantidad || '-'}}</span> 
+				</li>
+			</ul>
           </v-col>
           <v-col>
               <table>
@@ -49,9 +68,18 @@
 						></v-progress-circular>
 					</v-col>
 				</v-row>
+				<v-row v-if="ocultarInformacionYMostrarSpinner">
+					<v-col md="3">
+						<v-combobox
+							v-model="seleccionSemanaUsoUnidades"
+							:items="listaNumeroSemanaAño"
+							label="Selección de semana"
+							></v-combobox>
+					</v-col>
+				</v-row>
                 <v-data-table
                     :headers="headersListaUsoUnidades"
-                    :items="listaLoginUnidadesSemanaTabla"
+                    :items="listaLoginUnidadesSemanaTablaVista"
                     :items-per-page="20"
                     class="elevation-1"
 					v-if="ocultarInformacionYMostrarSpinner"
@@ -285,13 +313,91 @@ export default {
 			vm.ocultarInformacionYMostrarSpinner = false
 			fetch("http://"+ruta+"/api/logunidad?cliente="+this.cliente.nombre).then((data)=>data.json()).then(
 				function(data){
+
+					//Con eso construyo el combobox
+					vm.listaNumeroSemanaAño = _.uniq(_.map(data,'numeroSemanaAño')).sort(function(a,b){return b-a})
+					if(vm.listaNumeroSemanaAño.length > 0)
+					{
+						vm.seleccionSemanaUsoUnidades = vm.listaNumeroSemanaAño[0]
+					}
+
+
 					vm.listaLoginUnidadesSemanaTabla = data
 					vm.ocultarInformacionYMostrarSpinner = true
 				}
 
 
 			)
+		},
+		mostrarUltimaAltaMarcaPermiso(estadoIntegraciones) {
+			let vm = this;
+			let ultimasMarcas = estadoIntegraciones.marcas
+			let ultimaAlta = estadoIntegraciones.alta
+			let ultimoPermiso = estadoIntegraciones.permiso
+			var diferenciaTotalSegundos = 0
+
+			vm.listaUltimasMarcas = ultimasMarcas;
+			if(ultimasMarcas.length > 0)
+			{
+				diferenciaTotalSegundos = vm.calculoDiferenciaTiempo(ultimasMarcas[0].diferencia);
+
+
+				if(diferenciaTotalSegundos > 43200 && diferenciaTotalSegundos < 86400)
+				{
+					vm.ultimaMarcaTiempo.tipoAdvertencia = 'warning';
+				}
+				else if(diferenciaTotalSegundos > 86400)
+				{
+					vm.ultimaMarcaTiempo.tipoAdvertencia = 'danger';
+				}
+
+				vm.ultimaMarcaTiempo.cantidad = window.moment.duration(diferenciaTotalSegundos,"seconds").humanize()
+			}
+
+			if(ultimaAlta !== null)
+			{
+				diferenciaTotalSegundos = vm.calculoDiferenciaTiempo(ultimaAlta.diferencia)
+				if(diferenciaTotalSegundos > 43200 && diferenciaTotalSegundos < 86400)
+				{
+					vm.ultimaAltaTiempo.tipoAdvertencia = 'warning';
+				}
+				else if(diferenciaTotalSegundos > 86400)
+				{
+					vm.ultimaAltaTiempo.tipoAdvertencia = 'danger';
+				}
+				vm.ultimaAltaTiempo.cantidad = window.moment.duration(diferenciaTotalSegundos,"seconds").humanize()
+			}
+			if(ultimoPermiso !== null)
+			{
+				diferenciaTotalSegundos = vm.calculoDiferenciaTiempo(ultimoPermiso.diferencia);
+				if(diferenciaTotalSegundos > 43200 && diferenciaTotalSegundos < 86400)
+				{
+					vm.ultimoPermisoTiempo.tipoAdvertencia = 'warning';
+				}
+				else if(diferenciaTotalSegundos > 86400)
+				{
+					vm.ultimoPermisoTiempo.tipoAdvertencia = 'danger';
+				}
+				vm.ultimoPermisoTiempo.cantidad = window.moment.duration(diferenciaTotalSegundos,"seconds").humanize()
+			}
+
+		},
+
+		calculoDiferenciaTiempo(diferenciaTiempoBD) {
+			return diferenciaTiempoBD.split(':').map(function(objArreglo,indice){
+					if(indice === 0) {
+						return parseInt(objArreglo)*60*60
+					}
+					if(indice === 1) {
+						return parseInt(objArreglo)*60
+					}
+					return parseInt(objArreglo)
+
+				}).reduce(function(valorAnterior, valorActual){
+					return valorAnterior + valorActual;
+				});
 		}
+
 	},
 	watch: {
 		seleccionSemana: function (val) {			
@@ -300,7 +406,10 @@ export default {
 			this.listaUsoJefaturaRRHHVista = _.filter(this.listaUsoJefaturaRRHH, {'numeroSemanaAño' : parseInt(val)});
 			this.listaUsoUsuarioVista = _.filter(this.listaUsoUsuario, {'numeroSemanaAño' : parseInt(val)});
 			this.listaUsoRflexVista = _.filter(this.listaUsoRflex, {'numeroSemanaAño' : parseInt(val)});
-		}
+		},
+		seleccionSemanaUsoUnidades: function (val) {			
+			this.listaLoginUnidadesSemanaTablaVista = _.filter(this.listaLoginUnidadesSemanaTabla, {'numeroSemanaAño' : parseInt(val)});
+		},
 	},
     mounted : function() {
 		let vm = this;
@@ -311,57 +420,35 @@ export default {
 			ruta = "api.dashboard.kindall.io";
 		}
 
+		vm.mostrarUltimaAltaMarcaPermiso(this.cliente.estadoIntegraciones)
+
         fetch("http://"+ruta+"/api/inconsistencias?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaInconsistencia = data)
-        fetch("http://"+ruta+"/api/marcas?cliente="+this.cliente.nombre).then((data)=>data.json()).then(
-				function(data) {
-					vm.listaUltimasMarcas = data;
-					if(data.length > 0)
-					{
-						var diferenciaHoraria = data[0].diferencia;
-						
-						var diferenciaTotalSegundos = diferenciaHoraria.split(':').map(function(data,indice){
-							if(indice === 0) {
-								return parseInt(data)*60*60
-							}
-							if(indice === 1) {
-								return parseInt(data)*60
-							}
-							return parseInt(data)
-
-						}).reduce(function(valorAnterior, valorActual){
-							return valorAnterior + valorActual;
-						});
-
-						vm.ultimaMarcaTiempo = {
-							'tipoAdvertencia' : null,
-							'cantidad' : ''
-						}
-
-						if(diferenciaTotalSegundos > 43200 && diferenciaTotalSegundos < 86400)
-						{
-							vm.ultimaMarcaTiempo.tipoAdvertencia = 'warning';
-						}
-						else if(diferenciaTotalSegundos > 86400)
-						{
-							vm.ultimaMarcaTiempo.tipoAdvertencia = 'danger';
-						}
-
-						vm.ultimaMarcaTiempo.cantidad = window.moment.duration(diferenciaTotalSegundos,"seconds").humanize()
-					}
-				}
-			)
+     
     },
     data: () => ({
         tab: null,
         modalUso: false,
         mostrarError: '',
-        ultimaMarcaTiempo: false,
+        ultimaMarcaTiempo: {
+					'tipoAdvertencia' : null,
+					'cantidad' : ''
+				},
+        ultimaAltaTiempo: {
+					'tipoAdvertencia' : null,
+					'cantidad' : ''
+				},
+        ultimoPermisoTiempo: {
+					'tipoAdvertencia' : null,
+					'cantidad' : ''
+				},
         ocultarInformacionYMostrarSpinner: false,
         seleccionSemana: '',
+        seleccionSemanaUsoUnidades: '',
         modalErorres: false,
         modalUsoTotalTipoUsuario: false,
         listaUltimasMarcas : [],
         listaLoginUnidadesSemanaTabla : [],
+        listaLoginUnidadesSemanaTablaVista : [],
         listaNumeroSemanaAño : [],
         listaUsoCompleta : [],
         listaUsoJefatura : [],
