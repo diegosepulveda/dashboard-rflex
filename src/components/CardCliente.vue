@@ -26,7 +26,7 @@
 			<table>
 				<tr>
 					<td class="boton" @click="moverSemana('back')"  >Atras</td>
-					<td >Semana: {{listaMostarUsoResumido.numeroSemanaActual}}</td>
+					<td >Semana: {{pruebadiego}}</td>
 					<td class="boton" @click="moverSemana('forward')" >Adelante</td>
 				</tr>
 				<tr>
@@ -429,6 +429,7 @@ export default {
 				}
 			}
 			vm.listaMostarUsoResumido.numeroSemanaActual = vm.listaNumeroSemanaAñoFrontUsoResumido[indiceRequerido];
+			vm.pruebadiego = vm.listaNumeroSemanaAñoFrontUsoResumido[indiceRequerido];
 			console.log(vm.listaMostarUsoResumido.numeroSemanaActual);
 
 
@@ -443,8 +444,35 @@ export default {
 				vm.listaUsoTipoUsuarioResumidaFront = _.filter(this.cliente.usoMetricaResumida,{'numeroSemanaAño' : vm.listaNumeroSemanaAñoFrontUsoResumido[0]})
 
 				vm.listaMostarUsoResumido.numeroSemanaActual = vm.listaNumeroSemanaAñoFrontUsoResumido[0]
+				vm.pruebadiego = vm.listaNumeroSemanaAñoFrontUsoResumido[0]
+
+				var valorGerencia = _.filter(vm.listaUsoTipoUsuarioResumidaFront,{'tipo_segun_nombre' : 'gerencia'})
+				var valorJefatura = _.filter(vm.listaUsoTipoUsuarioResumidaFront,{'tipo_segun_nombre' : 'jefatura'})
+				var valorUsuario = _.filter(vm.listaUsoTipoUsuarioResumidaFront,{'tipo_segun_nombre' : 'usuario'})
+
+				
 				vm.listaMostarUsoResumido.listaMostarWeb = [0,0,0]
 				vm.listaMostarUsoResumido.listaMostarMobile = [0,0,0]
+
+				if(valorUsuario.length > 0)
+				{
+					vm.listaMostarUsoResumido.listaMostarWeb[0]	= valorUsuario[0].totalWeb
+					vm.listaMostarUsoResumido.listaMostarMobile[0]	= valorUsuario[0].totalMobile
+				}
+
+				if(valorJefatura.length > 0)
+				{
+					vm.listaMostarUsoResumido.listaMostarWeb[1]	= valorJefatura[0].totalWeb
+					vm.listaMostarUsoResumido.listaMostarMobile[1]	= valorJefatura[0].totalMobile
+				}
+
+
+				if(valorGerencia.length > 0)
+				{
+					vm.listaMostarUsoResumido.listaMostarWeb[2]	= valorGerencia[0].totalWeb
+					vm.listaMostarUsoResumido.listaMostarMobile[2]	= valorGerencia[0].totalMobile
+				}
+
 
 
 			}
@@ -463,8 +491,45 @@ export default {
 		seleccionSemanaUsoUnidades: function (val) {			
 			this.listaLoginUnidadesSemanaTablaVista = _.filter(this.listaLoginUnidadesSemanaTabla, {'numeroSemanaAño' : parseInt(val)});
 		},
-		listaMostarUsoResumido: function (val) {			
-			console.log('asasd'+val)
+		pruebadiego: function (valor) {		
+			let vm = this;
+
+			vm.listaUsoTipoUsuarioResumidaFront = _.filter(this.cliente.usoMetricaResumida,{'numeroSemanaAño' : valor})
+			console.log(vm.listaUsoTipoUsuarioResumidaFront)
+
+
+
+			var valorGerencia = _.filter(vm.listaUsoTipoUsuarioResumidaFront,{'tipo_segun_nombre' : 'gerencia'})
+			var valorJefatura = _.filter(vm.listaUsoTipoUsuarioResumidaFront,{'tipo_segun_nombre' : 'jefatura'})
+			var valorUsuario = _.filter(vm.listaUsoTipoUsuarioResumidaFront,{'tipo_segun_nombre' : 'usuario'})
+
+			
+			vm.listaMostarUsoResumido.listaMostarWeb = [0,0,0]
+			vm.listaMostarUsoResumido.listaMostarMobile = [0,0,0]
+
+			if(valorUsuario.length > 0)
+			{
+				vm.listaMostarUsoResumido.listaMostarWeb[0]	= valorUsuario[0].totalWeb
+				vm.listaMostarUsoResumido.listaMostarMobile[0]	= valorUsuario[0].totalMobile
+			}
+
+			if(valorJefatura.length > 0)
+			{
+				vm.listaMostarUsoResumido.listaMostarWeb[1]	= valorJefatura[0].totalWeb
+				vm.listaMostarUsoResumido.listaMostarMobile[1]	= valorJefatura[0].totalMobile
+			}
+
+
+			if(valorGerencia.length > 0)
+			{
+				vm.listaMostarUsoResumido.listaMostarWeb[2]	= valorGerencia[0].totalWeb
+				vm.listaMostarUsoResumido.listaMostarMobile[2]	= valorGerencia[0].totalMobile
+			}
+
+
+
+
+
 		},
 	},
     mounted : function() {
@@ -483,6 +548,7 @@ export default {
     },
     data: () => ({
         tab: null,
+        pruebadiego: null,
         modalUso: false,
         mostrarError: '',
         ultimaMarcaTiempo: {
