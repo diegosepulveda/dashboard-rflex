@@ -8,9 +8,6 @@
 
         <v-row>
           <v-col class="letraChica">
-                <!-- <li class="letraChica"  v-for="(item, index) in listaUltimasMarcas" :key="index" v-bind:class="{ errorMarca: item.posibleError }" >
-                    {{ item.FECHA_MARCA }} {{ item.HORA_MARCA }}
-                </li> -->
 			<ul>
 				<li style="text-align: start;">
 					Alta: <span v-bind:class="{ errorMarcaWarning: ultimaAltaTiempo.tipoAdvertencia === 'warning',errorMarcaDanger: ultimaAltaTiempo.tipoAdvertencia === 'danger' }">{{ultimaAltaTiempo.cantidad || '-'}}</span> 
@@ -25,9 +22,15 @@
 			
 			<table>
 				<tr>
-					<td class="boton" @click="moverSemana('back')"  >Atras</td>
-					<td >Semana: {{pruebadiego}}</td>
-					<td class="boton" @click="moverSemana('forward')" >Adelante</td>
+					<td>
+						<v-icon @click="moverSemana('back')">mdi-chevron-left</v-icon>
+					</td>
+					<td>
+						Semana: {{listaMostarUsoResumido.numeroSemanaActual}}
+					</td>
+					<td>
+						<v-icon @click="moverSemana('forward')">mdi-chevron-right</v-icon>
+					</td>
 				</tr>
 				<tr>
 					<td>Usuarios</td>
@@ -235,8 +238,6 @@
     <v-card-actions>
 		<v-btn text @click="abrirModalUsoUnidades()">Uso Unidades</v-btn>
 		<v-btn text @click="abrirModalUsoTotal()">Uso Total</v-btn>
-		<!-- <v-btn text @click="getData">Uso Web</v-btn>
-		<v-btn text @click="getData">Uso Mobile</v-btn> -->
 		<v-btn text @click="abrirModalErrores()">Errores</v-btn>
     </v-card-actions>
   </v-card>
@@ -348,49 +349,34 @@ export default {
 			if(ultimasMarcas.length > 0)
 			{
 				diferenciaTotalSegundos = vm.calculoDiferenciaTiempo(ultimasMarcas[0].diferencia);
-
-
-				if(diferenciaTotalSegundos > 43200 && diferenciaTotalSegundos < 86400)
-				{
-					vm.ultimaMarcaTiempo.tipoAdvertencia = 'warning';
-				}
-				else if(diferenciaTotalSegundos > 86400)
-				{
-					vm.ultimaMarcaTiempo.tipoAdvertencia = 'danger';
-				}
-
+				vm.ultimaMarcaTiempo.tipoAdvertencia = this.getTipoWarningSegunSegundos(diferenciaTotalSegundos)
 				vm.ultimaMarcaTiempo.cantidad = window.moment.duration(diferenciaTotalSegundos,"seconds").humanize()
 			}
 
 			if(ultimaAlta !== null)
 			{
 				diferenciaTotalSegundos = vm.calculoDiferenciaTiempo(ultimaAlta.diferencia)
-				if(diferenciaTotalSegundos > 43200 && diferenciaTotalSegundos < 86400)
-				{
-					vm.ultimaAltaTiempo.tipoAdvertencia = 'warning';
-				}
-				else if(diferenciaTotalSegundos > 86400)
-				{
-					vm.ultimaAltaTiempo.tipoAdvertencia = 'danger';
-				}
+				vm.ultimaAltaTiempo.tipoAdvertencia = this.getTipoWarningSegunSegundos(diferenciaTotalSegundos)
 				vm.ultimaAltaTiempo.cantidad = window.moment.duration(diferenciaTotalSegundos,"seconds").humanize()
 			}
 			if(ultimoPermiso !== null)
 			{
 				diferenciaTotalSegundos = vm.calculoDiferenciaTiempo(ultimoPermiso.diferencia);
-				if(diferenciaTotalSegundos > 43200 && diferenciaTotalSegundos < 86400)
-				{
-					vm.ultimoPermisoTiempo.tipoAdvertencia = 'warning';
-				}
-				else if(diferenciaTotalSegundos > 86400)
-				{
-					vm.ultimoPermisoTiempo.tipoAdvertencia = 'danger';
-				}
+				vm.ultimoPermisoTiempo.tipoAdvertencia = this.getTipoWarningSegunSegundos(diferenciaTotalSegundos)
 				vm.ultimoPermisoTiempo.cantidad = window.moment.duration(diferenciaTotalSegundos,"seconds").humanize()
 			}
-
 		},
-
+		getTipoWarningSegunSegundos(numeroSegundos) {
+			if(numeroSegundos > 43200 && numeroSegundos < 86400)
+			{
+				return 'warning'
+			}
+			else if(numeroSegundos > 86400)
+			{
+				return 'danger'
+			}
+			return ''
+		},
 		calculoDiferenciaTiempo(diferenciaTiempoBD) {
 			return diferenciaTiempoBD.split(':').map(function(objArreglo,indice){
 					if(indice === 0) {
@@ -406,10 +392,8 @@ export default {
 				});
 		},
 		moverSemana(direccion){
-			console.log(direccion);
-			let vm = this;
-			var indiceActual = vm.listaNumeroSemanaAñoFrontUsoResumido.indexOf(vm.listaMostarUsoResumido.numeroSemanaActual)
-			var largoTotal = vm.listaNumeroSemanaAñoFrontUsoResumido.length
+			var indiceActual = this.listaNumeroSemanaAñoFrontUsoResumido.indexOf(this.listaMostarUsoResumido.numeroSemanaActual)
+			var largoTotal = this.listaNumeroSemanaAñoFrontUsoResumido.length
 			var indiceRequerido;
 			
 			if(direccion == 'back')
@@ -428,57 +412,39 @@ export default {
 					return;
 				}
 			}
-			vm.listaMostarUsoResumido.numeroSemanaActual = vm.listaNumeroSemanaAñoFrontUsoResumido[indiceRequerido];
-			vm.pruebadiego = vm.listaNumeroSemanaAñoFrontUsoResumido[indiceRequerido];
-			console.log(vm.listaMostarUsoResumido.numeroSemanaActual);
-
-
+			this.listaMostarUsoResumido.numeroSemanaActual = this.listaNumeroSemanaAñoFrontUsoResumido[indiceRequerido]
+			this.mostarDatosUsoTipoUsuarioResumidoMaster(this.cliente.usoMetricaResumida,this.listaMostarUsoResumido,this.listaMostarUsoResumido.numeroSemanaActual)
 		},
-		mostarDatosUsoTipoUsuarioResumido()
-		{
-			let vm = this;
+		mostarDatosUsoTipoUsuarioResumidoMaster(listaUsoMetricaReducido,objView,numeroSemanaAño) {
+			var lista = _.filter(listaUsoMetricaReducido,{'numeroSemanaAño' : numeroSemanaAño})
 
-			if(this.cliente.usoMetricaResumida.length > 0)
+			objView.numeroSemanaActual = numeroSemanaAño
+			
+			var valorGerencia = _.filter(lista,{'tipo_segun_nombre' : 'gerencia'})
+			var valorJefatura = _.filter(lista,{'tipo_segun_nombre' : 'jefatura'})
+			var valorUsuario = _.filter(lista,{'tipo_segun_nombre' : 'usuario'})
+			
+			objView.listaMostarWeb = [0,0,0]
+			objView.listaMostarMobile = [0,0,0]
+
+			if(valorUsuario.length > 0)
 			{
-				vm.listaNumeroSemanaAñoFrontUsoResumido = _.uniq(_.map(this.cliente.usoMetricaResumida,'numeroSemanaAño')).sort(function(a,b){return b-a})
-				vm.listaUsoTipoUsuarioResumidaFront = _.filter(this.cliente.usoMetricaResumida,{'numeroSemanaAño' : vm.listaNumeroSemanaAñoFrontUsoResumido[0]})
-
-				vm.listaMostarUsoResumido.numeroSemanaActual = vm.listaNumeroSemanaAñoFrontUsoResumido[0]
-				vm.pruebadiego = vm.listaNumeroSemanaAñoFrontUsoResumido[0]
-
-				var valorGerencia = _.filter(vm.listaUsoTipoUsuarioResumidaFront,{'tipo_segun_nombre' : 'gerencia'})
-				var valorJefatura = _.filter(vm.listaUsoTipoUsuarioResumidaFront,{'tipo_segun_nombre' : 'jefatura'})
-				var valorUsuario = _.filter(vm.listaUsoTipoUsuarioResumidaFront,{'tipo_segun_nombre' : 'usuario'})
-
-				
-				vm.listaMostarUsoResumido.listaMostarWeb = [0,0,0]
-				vm.listaMostarUsoResumido.listaMostarMobile = [0,0,0]
-
-				if(valorUsuario.length > 0)
-				{
-					vm.listaMostarUsoResumido.listaMostarWeb[0]	= valorUsuario[0].totalWeb
-					vm.listaMostarUsoResumido.listaMostarMobile[0]	= valorUsuario[0].totalMobile
-				}
-
-				if(valorJefatura.length > 0)
-				{
-					vm.listaMostarUsoResumido.listaMostarWeb[1]	= valorJefatura[0].totalWeb
-					vm.listaMostarUsoResumido.listaMostarMobile[1]	= valorJefatura[0].totalMobile
-				}
-
-
-				if(valorGerencia.length > 0)
-				{
-					vm.listaMostarUsoResumido.listaMostarWeb[2]	= valorGerencia[0].totalWeb
-					vm.listaMostarUsoResumido.listaMostarMobile[2]	= valorGerencia[0].totalMobile
-				}
-
-
-
+				objView.listaMostarWeb[0]	= valorUsuario[0].totalWeb
+				objView.listaMostarMobile[0]	= valorUsuario[0].totalMobile
 			}
 
-		}
+			if(valorJefatura.length > 0)
+			{
+				objView.listaMostarWeb[1]	= valorJefatura[0].totalWeb
+				objView.listaMostarMobile[1]	= valorJefatura[0].totalMobile
+			}
 
+			if(valorGerencia.length > 0)
+			{
+				objView.listaMostarWeb[2]	= valorGerencia[0].totalWeb
+				objView.listaMostarMobile[2]	= valorGerencia[0].totalMobile
+			}
+		}
 	},
 	watch: {
 		seleccionSemana: function (val) {			
@@ -491,64 +457,22 @@ export default {
 		seleccionSemanaUsoUnidades: function (val) {			
 			this.listaLoginUnidadesSemanaTablaVista = _.filter(this.listaLoginUnidadesSemanaTabla, {'numeroSemanaAño' : parseInt(val)});
 		},
-		pruebadiego: function (valor) {		
-			let vm = this;
-
-			vm.listaUsoTipoUsuarioResumidaFront = _.filter(this.cliente.usoMetricaResumida,{'numeroSemanaAño' : valor})
-			console.log(vm.listaUsoTipoUsuarioResumidaFront)
-
-
-
-			var valorGerencia = _.filter(vm.listaUsoTipoUsuarioResumidaFront,{'tipo_segun_nombre' : 'gerencia'})
-			var valorJefatura = _.filter(vm.listaUsoTipoUsuarioResumidaFront,{'tipo_segun_nombre' : 'jefatura'})
-			var valorUsuario = _.filter(vm.listaUsoTipoUsuarioResumidaFront,{'tipo_segun_nombre' : 'usuario'})
-
-			
-			vm.listaMostarUsoResumido.listaMostarWeb = [0,0,0]
-			vm.listaMostarUsoResumido.listaMostarMobile = [0,0,0]
-
-			if(valorUsuario.length > 0)
-			{
-				vm.listaMostarUsoResumido.listaMostarWeb[0]	= valorUsuario[0].totalWeb
-				vm.listaMostarUsoResumido.listaMostarMobile[0]	= valorUsuario[0].totalMobile
-			}
-
-			if(valorJefatura.length > 0)
-			{
-				vm.listaMostarUsoResumido.listaMostarWeb[1]	= valorJefatura[0].totalWeb
-				vm.listaMostarUsoResumido.listaMostarMobile[1]	= valorJefatura[0].totalMobile
-			}
-
-
-			if(valorGerencia.length > 0)
-			{
-				vm.listaMostarUsoResumido.listaMostarWeb[2]	= valorGerencia[0].totalWeb
-				vm.listaMostarUsoResumido.listaMostarMobile[2]	= valorGerencia[0].totalMobile
-			}
-
-
-
-
-
-		},
 	},
     mounted : function() {
-		let vm = this;
 		var direccion = window.location.href;
 		var ruta = "api.dashboard.test";
 		if(direccion.includes('kindall'))
 		{
 			ruta = "api.dashboard.kindall.io";
 		}
-
-		vm.mostrarUltimaAltaMarcaPermiso(this.cliente.estadoIntegraciones)
-		vm.mostarDatosUsoTipoUsuarioResumido()
+		this.listaNumeroSemanaAñoFrontUsoResumido = _.uniq(_.map(this.cliente.usoMetricaResumida,'numeroSemanaAño')).sort(function(a,b){return a-b})
+		this.mostrarUltimaAltaMarcaPermiso(this.cliente.estadoIntegraciones)
+		this.mostarDatosUsoTipoUsuarioResumidoMaster(this.cliente.usoMetricaResumida,this.listaMostarUsoResumido,this.listaNumeroSemanaAñoFrontUsoResumido[this.listaNumeroSemanaAñoFrontUsoResumido.length - 1])
         fetch("http://"+ruta+"/api/inconsistencias?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaInconsistencia = data)
      
     },
     data: () => ({
         tab: null,
-        pruebadiego: null,
         modalUso: false,
         mostrarError: '',
         ultimaMarcaTiempo: {
@@ -575,7 +499,11 @@ export default {
         listaNumeroSemanaAño : [],
         listaNumeroSemanaAñoFrontUsoResumido : [],
         listaUsoCompleta : [],
-        listaMostarUsoResumido : {},
+        listaMostarUsoResumido : {
+			numeroSemanaActual : 0,
+			listaMostarWeb : [],
+			listaMostarMobile : [],
+		},
         listaUsoJefatura : [],
         listaUsoGerencia : [],
         listaUsoJefaturaRRHH : [],
