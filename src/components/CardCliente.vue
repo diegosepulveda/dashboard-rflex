@@ -44,6 +44,11 @@
 					<td v-for="(numero , index) in listaMostarUsoResumido.listaMostarMobile" :key="index" >{{numero}}</td>
 				</tr>
 			</table>
+
+			<ul>
+				<li style="text-align: start;" v-for="(obj , index) in listaMostarUsoResumido.listaMostarProducto" :key="index">{{obj.nombre}} : {{obj.cantidad}} </li>
+			</ul>
+
           </v-col>
           <v-col>
               <table>
@@ -414,6 +419,7 @@ export default {
 			}
 			this.listaMostarUsoResumido.numeroSemanaActual = this.listaNumeroSemanaAñoFrontUsoResumido[indiceRequerido]
 			this.mostarDatosUsoTipoUsuarioResumidoMaster(this.cliente.usoMetricaResumida,this.listaMostarUsoResumido,this.listaMostarUsoResumido.numeroSemanaActual)
+			this.listaMostarUsoResumido.listaMostarProducto = this.mostrarMetricasProducto(this.cliente.usoMetricaProducto,this.listaMostarUsoResumido.numeroSemanaActual)
 		},
 		mostarDatosUsoTipoUsuarioResumidoMaster(listaUsoMetricaReducido,objView,numeroSemanaAño) {
 			var lista = _.filter(listaUsoMetricaReducido,{'numeroSemanaAño' : numeroSemanaAño})
@@ -444,6 +450,24 @@ export default {
 				objView.listaMostarWeb[2]	= valorGerencia[0].totalWeb
 				objView.listaMostarMobile[2]	= valorGerencia[0].totalMobile
 			}
+		},
+		mostrarMetricasProducto(usoMetricaProducto,numeroSemana) {
+			//Me falta el let vm ? no lo se....
+			var lista = _.uniq(_.map(usoMetricaProducto,'nombre'))
+
+			var listaVacia = []
+			_.each(lista,function(nombre){
+
+				var objMetrica = _.find(usoMetricaProducto,{'numeroSemanaAño' : numeroSemana,'nombre' : nombre})
+				var cantidadObjMetrica = 0
+				if(objMetrica !== undefined)
+				{
+					cantidadObjMetrica = objMetrica.cantidad
+				}
+
+				listaVacia.push({'nombre':nombre,'cantidad': cantidadObjMetrica })
+			})
+			return listaVacia;
 		}
 	},
 	watch: {
@@ -467,6 +491,7 @@ export default {
 		}
 		this.listaNumeroSemanaAñoFrontUsoResumido = _.uniq(_.map(this.cliente.usoMetricaResumida,'numeroSemanaAño')).sort(function(a,b){return a-b})
 		this.mostrarUltimaAltaMarcaPermiso(this.cliente.estadoIntegraciones)
+		this.listaMostarUsoResumido.listaMostarProducto = this.mostrarMetricasProducto(this.cliente.usoMetricaProducto,this.listaNumeroSemanaAñoFrontUsoResumido.length - 1)
 		this.mostarDatosUsoTipoUsuarioResumidoMaster(this.cliente.usoMetricaResumida,this.listaMostarUsoResumido,this.listaNumeroSemanaAñoFrontUsoResumido[this.listaNumeroSemanaAñoFrontUsoResumido.length - 1])
         fetch("http://"+ruta+"/api/inconsistencias?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaInconsistencia = data)
      
@@ -503,6 +528,7 @@ export default {
 			numeroSemanaActual : 0,
 			listaMostarWeb : [],
 			listaMostarMobile : [],
+			listaMostarProducto : [],
 		},
         listaUsoJefatura : [],
         listaUsoGerencia : [],
