@@ -5,18 +5,7 @@
                 <slot></slot>
             </v-col>
         </v-row>
-		<!-- <v-row class="letraChica">
-			<v-col>Ultima marca hace </v-col>
-			<v-col  >{{ultimaMarcaTiempo.cantidad}}</v-col>
-		</v-row>
-		<v-row class="letraChica">
-			<v-col>Ultima alta hace </v-col>
-			<v-col v-bind:class="{ errorMarcaWarning: ultimaMarcaTiempo.tipoAdvertencia === 'warning',errorMarcaDanger: ultimaMarcaTiempo.tipoAdvertencia === 'danger' }" >{{ultimaAltaTiempo.cantidad}}</v-col>
-		</v-row>
-		<v-row class="letraChica">
-			<v-col>Ultima permiso hace </v-col>
-			<v-col v-bind:class="{ errorMarcaWarning: ultimaMarcaTiempo.tipoAdvertencia === 'warning',errorMarcaDanger: ultimaMarcaTiempo.tipoAdvertencia === 'danger' }" >{{ultimoPermisoTiempo.cantidad}}</v-col>
-		</v-row> -->
+
         <v-row>
           <v-col class="letraChica">
                 <!-- <li class="letraChica"  v-for="(item, index) in listaUltimasMarcas" :key="index" v-bind:class="{ errorMarca: item.posibleError }" >
@@ -33,6 +22,25 @@
 					Marca: <span v-bind:class="{ errorMarcaWarning: ultimaMarcaTiempo.tipoAdvertencia === 'warning',errorMarcaDanger: ultimaMarcaTiempo.tipoAdvertencia === 'danger' }">{{ultimaMarcaTiempo.cantidad || '-'}}</span> 
 				</li>
 			</ul>
+			
+			<table>
+				<tr>
+					<td class="boton" @click="moverSemana('back')"  >Atras</td>
+					<td >Semana: {{listaMostarUsoResumido.numeroSemanaActual}}</td>
+					<td class="boton" @click="moverSemana('forward')" >Adelante</td>
+				</tr>
+				<tr>
+					<td>Usuarios</td>
+					<td>Admins</td>
+					<td>RRHH</td>
+				</tr>
+				<tr>
+					<td v-for="(numero , index) in listaMostarUsoResumido.listaMostarWeb" :key="index" >{{numero}}</td>
+				</tr>
+				<tr>
+					<td v-for="(numero , index) in listaMostarUsoResumido.listaMostarMobile" :key="index" >{{numero}}</td>
+				</tr>
+			</table>
           </v-col>
           <v-col>
               <table>
@@ -396,6 +404,51 @@ export default {
 				}).reduce(function(valorAnterior, valorActual){
 					return valorAnterior + valorActual;
 				});
+		},
+		moverSemana(direccion){
+			console.log(direccion);
+			let vm = this;
+			var indiceActual = vm.listaNumeroSemanaAñoFrontUsoResumido.indexOf(vm.listaMostarUsoResumido.numeroSemanaActual)
+			var largoTotal = vm.listaNumeroSemanaAñoFrontUsoResumido.length
+			var indiceRequerido;
+			
+			if(direccion == 'back')
+			{
+				indiceRequerido = indiceActual - 1;
+				if(indiceRequerido == -1)
+				{
+					return;
+				}
+			}
+			else
+			{
+				indiceRequerido = indiceActual + 1;
+				if(indiceRequerido == largoTotal)
+				{
+					return;
+				}
+			}
+			vm.listaMostarUsoResumido.numeroSemanaActual = vm.listaNumeroSemanaAñoFrontUsoResumido[indiceRequerido];
+			console.log(vm.listaMostarUsoResumido.numeroSemanaActual);
+
+
+		},
+		mostarDatosUsoTipoUsuarioResumido()
+		{
+			let vm = this;
+
+			if(this.cliente.usoMetricaResumida.length > 0)
+			{
+				vm.listaNumeroSemanaAñoFrontUsoResumido = _.uniq(_.map(this.cliente.usoMetricaResumida,'numeroSemanaAño')).sort(function(a,b){return b-a})
+				vm.listaUsoTipoUsuarioResumidaFront = _.filter(this.cliente.usoMetricaResumida,{'numeroSemanaAño' : vm.listaNumeroSemanaAñoFrontUsoResumido[0]})
+
+				vm.listaMostarUsoResumido.numeroSemanaActual = vm.listaNumeroSemanaAñoFrontUsoResumido[0]
+				vm.listaMostarUsoResumido.listaMostarWeb = [0,0,0]
+				vm.listaMostarUsoResumido.listaMostarMobile = [0,0,0]
+
+
+			}
+
 		}
 
 	},
@@ -410,6 +463,9 @@ export default {
 		seleccionSemanaUsoUnidades: function (val) {			
 			this.listaLoginUnidadesSemanaTablaVista = _.filter(this.listaLoginUnidadesSemanaTabla, {'numeroSemanaAño' : parseInt(val)});
 		},
+		listaMostarUsoResumido: function (val) {			
+			console.log('asasd'+val)
+		},
 	},
     mounted : function() {
 		let vm = this;
@@ -421,7 +477,7 @@ export default {
 		}
 
 		vm.mostrarUltimaAltaMarcaPermiso(this.cliente.estadoIntegraciones)
-
+		vm.mostarDatosUsoTipoUsuarioResumido()
         fetch("http://"+ruta+"/api/inconsistencias?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaInconsistencia = data)
      
     },
@@ -447,10 +503,13 @@ export default {
         modalErorres: false,
         modalUsoTotalTipoUsuario: false,
         listaUltimasMarcas : [],
+        listaUsoTipoUsuarioResumidaFront : [],
         listaLoginUnidadesSemanaTabla : [],
         listaLoginUnidadesSemanaTablaVista : [],
         listaNumeroSemanaAño : [],
+        listaNumeroSemanaAñoFrontUsoResumido : [],
         listaUsoCompleta : [],
+        listaMostarUsoResumido : {},
         listaUsoJefatura : [],
         listaUsoGerencia : [],
         listaUsoJefaturaRRHH : [],
@@ -513,7 +572,7 @@ export default {
 </script>
 <style scoped>
 table{
-    font-size: 11px;
+    font-size: 10px;
 }
 
 .letraChica{
@@ -532,6 +591,13 @@ table{
 .errorMarcaDanger{
 	color : red;
 	font-weight: bold;
+
+}
+
+td.boton {
+    background-color: #2196f3;
+    color: white;
+    border-radius: 10px;
 
 }
 
