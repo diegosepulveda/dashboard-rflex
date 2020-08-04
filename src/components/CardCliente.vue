@@ -55,7 +55,7 @@
 						<v-icon @click="moverSemana('back','FDA')">mdi-chevron-left</v-icon>
 					</td>
 					<td>
-						Semana FDA: {{listaMostarFichasValidadas.numeroSemanaActual}}
+						{{listaMostarFichasValidadas.objActualFDA.fechaInicio}} - {{listaMostarFichasValidadas.objActualFDA.fechaTermino}}
 					</td>
 					<td>
 						<v-icon @click="moverSemana('forward','FDA')">mdi-chevron-right</v-icon>
@@ -63,7 +63,7 @@
 				</tr>
 			</table>
 			<ul>
-				<li style="text-align: start;" v-for="(obj , index) in listaMostarFichasValidadas.listaMostarFDA" :key="index">{{obj.nombre}} : {{obj.cantidad}} </li>
+				<li style="text-align: start;" v-for="(obj , index) in listaMostarFichasValidadas.listaMostarFDA" :key="index">FDAs Validadas : {{obj.cantidad}} </li>
 			</ul>
 
 
@@ -287,6 +287,20 @@ export default {
 				return '#B2DFDB'
 			}
 			return undefined;
+		},
+		rangoSemanaFDA : function(){
+			var fechaInicio = ''
+			var fechaTermino = ''
+			if(this.listaMostarFichasValidadas.listaMostarFDACompleta[this.listaMostarFichasValidadas.numeroSemanaActual] !== undefined)
+			{
+				fechaInicio = this.listaMostarFichasValidadas.listaMostarFDACompleta[this.listaMostarFichasValidadas.numeroSemanaActual].fechaInicio
+			}
+			if(this.listaMostarFichasValidadas.listaMostarFDACompleta[this.listaMostarFichasValidadas.numeroSemanaActual] !== undefined)
+			{
+				fechaInicio = this.listaMostarFichasValidadas.listaMostarFDACompleta[this.listaMostarFichasValidadas.numeroSemanaActual].fechaTermino
+			}
+
+			return fechaInicio+"-"+fechaTermino
 		}
 	},
     methods : {
@@ -460,7 +474,9 @@ export default {
 			}
 			else{
 				this.listaMostarFichasValidadas.numeroSemanaActual = numeroSemanaActual
-				this.listaMostarFichasValidadas.listaMostarFDA = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,numeroSemanaActual)
+				this.listaMostarFichasValidadas.listaMostarFDA = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,numeroSemanaActual)[0]
+				this.listaMostarFichasValidadas.listaMostarFDACompleta = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,numeroSemanaActual)[1]
+				this.listaMostarFichasValidadas.objActualFDA = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,numeroSemanaActual)[2]
 			}
 		},
 		mostarDatosUsoTipoUsuarioResumidoMaster(listaUsoMetricaReducido,objView,numeroSemanaAño) {
@@ -511,7 +527,7 @@ export default {
 			})
 			return listaVacia;
 		},
-		mostarFichasValidadas(listaFDA,nombrePerido)
+		mostarFichasValidadas(listaFDA,nombrePeriodo)
 		{
 			//Me falta el let vm ? no lo se....
 			var listaTipoPeriodo = _.uniq(_.map(listaFDA,'nombreTipoPeriodo'))
@@ -519,7 +535,7 @@ export default {
 			var listaVacia = []
 			_.each(listaTipoPeriodo,function(nombreTipoPeriodo){
 
-				var objMetrica = _.find(listaFDA,{'nombrePerido' : nombrePerido,'nombreTipoPeriodo' : nombreTipoPeriodo})
+				var objMetrica = _.find(listaFDA,{'nombrePeriodo' : nombrePeriodo,'nombreTipoPeriodo' : nombreTipoPeriodo})
 				var cantidadObjMetrica = 0
 				if(objMetrica !== undefined)
 				{
@@ -528,7 +544,9 @@ export default {
 
 				listaVacia.push({'nombre':nombreTipoPeriodo,'cantidad': cantidadObjMetrica })
 			})
-			return listaVacia;
+			return [
+				listaVacia,listaFDA,_.find(listaFDA,{'nombrePeriodo' : nombrePeriodo})
+			];
 		}
 		
 	},
@@ -553,7 +571,7 @@ export default {
 		}
 		this.listaNumeroSemanaAñoFrontUsoResumido = _.uniq(_.map(this.cliente.usoMetricaResumida,'numeroSemanaAño')).sort(function(a,b){return a-b})
 
-		this.listaNumeroPeriodos = _.uniq(_.map(this.cliente.listaFichaValidadas,'nombrePerido')).sort(function(a,b){return a-b})
+		this.listaNumeroPeriodos = _.uniq(_.map(this.cliente.listaFichaValidadas,'nombrePeriodo')).sort(function(a,b){return a-b})
 		
 
 		var ultimaSemana = this.listaNumeroSemanaAñoFrontUsoResumido[this.listaNumeroSemanaAñoFrontUsoResumido.length - 1]
@@ -564,7 +582,10 @@ export default {
 		this.listaMostarUsoResumido.listaMostarProducto = this.mostrarMetricasProducto(this.cliente.usoMetricaProducto,ultimaSemana)
 
 		this.listaMostarFichasValidadas.numeroSemanaActual = this.listaNumeroPeriodos[0]
-		this.listaMostarFichasValidadas.listaMostarFDA = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,this.listaNumeroPeriodos[0])
+		console.log(this.cliente.listaFichaValidadas)
+		this.listaMostarFichasValidadas.objActualFDA = _.find(this.cliente.listaFichaValidadas,{'nombrePeriodo': this.listaNumeroPeriodos[0]})
+		this.listaMostarFichasValidadas.listaMostarFDA = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,this.listaNumeroPeriodos[0])[0]
+		this.listaMostarFichasValidadas.listaMostarFDACompleta = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,this.listaNumeroPeriodos[0])[1]
 
 
 
@@ -609,7 +630,12 @@ export default {
 		},
 		listaMostarFichasValidadas : {
 			numeroSemanaActual : 0,
+			objActualFDA : {
+				'fechaInicio' : '',
+				'fechaTermino' : ''
+			},
 			listaMostarFDA : [],
+			listaMostarFDACompleta : [],
 		},
         listaUsoJefatura : [],
         listaUsoGerencia : [],
