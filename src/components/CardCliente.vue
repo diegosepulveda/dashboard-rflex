@@ -554,7 +554,7 @@ export default {
 		this.listaNumeroSemanaAñoFrontUsoResumido = _.uniq(_.map(this.cliente.usoMetricaResumida,'numeroSemanaAño')).sort(function(a,b){return a-b})
 
 		this.listaNumeroPeriodos = _.uniq(_.map(this.cliente.listaFichaValidadas,'nombrePerido')).sort(function(a,b){return a-b})
-
+		
 
 		var ultimaSemana = this.listaNumeroSemanaAñoFrontUsoResumido[this.listaNumeroSemanaAñoFrontUsoResumido.length - 1]
 
@@ -563,6 +563,7 @@ export default {
 		this.mostrarUltimaAltaMarcaPermiso(this.cliente.estadoIntegraciones)
 		this.listaMostarUsoResumido.listaMostarProducto = this.mostrarMetricasProducto(this.cliente.usoMetricaProducto,ultimaSemana)
 
+		this.listaMostarFichasValidadas.numeroSemanaActual = this.listaNumeroPeriodos[0]
 		this.listaMostarFichasValidadas.listaMostarFDA = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,this.listaNumeroPeriodos[0])
 
 
