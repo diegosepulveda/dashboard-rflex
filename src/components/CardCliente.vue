@@ -49,6 +49,26 @@
 				<li style="text-align: start;" v-for="(obj , index) in listaMostarUsoResumido.listaMostarProducto" :key="index">{{obj.nombre}} : {{obj.cantidad}} </li>
 			</ul>
 
+			<table>
+				<tr>
+					<td>
+						<v-icon @click="moverSemana('back','FDA')">mdi-chevron-left</v-icon>
+					</td>
+					<td>
+						Semana FDA: {{listaMostarFichasValidadas.numeroSemanaActual}}
+					</td>
+					<td>
+						<v-icon @click="moverSemana('forward','FDA')">mdi-chevron-right</v-icon>
+					</td>
+				</tr>
+			</table>
+			<ul>
+				<li style="text-align: start;" v-for="(obj , index) in listaMostarFichasValidadas.listaMostarFDA" :key="index">{{obj.nombre}} : {{obj.cantidad}} </li>
+			</ul>
+
+
+
+
           </v-col>
           <v-col>
               <table>
@@ -396,9 +416,22 @@ export default {
 					return valorAnterior + valorActual;
 				});
 		},
-		moverSemana(direccion){
-			var indiceActual = this.listaNumeroSemanaAñoFrontUsoResumido.indexOf(this.listaMostarUsoResumido.numeroSemanaActual)
-			var largoTotal = this.listaNumeroSemanaAñoFrontUsoResumido.length
+		moverSemana(direccion,tipoMovimiento){
+			var numeroSemana
+			var objCompleto
+			if(tipoMovimiento === undefined) {
+				numeroSemana = this.listaMostarUsoResumido.numeroSemanaActual
+				objCompleto = this.listaNumeroSemanaAñoFrontUsoResumido
+			}
+			else {
+				//Aca va el movimiento nuevo
+				numeroSemana = this.listaMostarFichasValidadas.numeroSemanaActual
+				objCompleto = this.listaNumeroPeriodos
+
+			}
+
+			var indiceActual = objCompleto.indexOf(numeroSemana)
+			var largoTotal = objCompleto.length
 			var indiceRequerido;
 			
 			if(direccion == 'back')
@@ -417,10 +450,18 @@ export default {
 					return;
 				}
 			}
-			var numeroSemanaActual = this.listaNumeroSemanaAñoFrontUsoResumido[indiceRequerido];
-			this.listaMostarUsoResumido.numeroSemanaActual = numeroSemanaActual
-			this.mostarDatosUsoTipoUsuarioResumidoMaster(this.cliente.usoMetricaResumida,this.listaMostarUsoResumido,numeroSemanaActual)
-			this.listaMostarUsoResumido.listaMostarProducto = this.mostrarMetricasProducto(this.cliente.usoMetricaProducto,numeroSemanaActual)
+
+			var numeroSemanaActual = objCompleto[indiceRequerido];
+
+			if(tipoMovimiento === undefined) {
+				this.listaMostarUsoResumido.numeroSemanaActual = numeroSemanaActual
+				this.mostarDatosUsoTipoUsuarioResumidoMaster(this.cliente.usoMetricaResumida,this.listaMostarUsoResumido,numeroSemanaActual)
+				this.listaMostarUsoResumido.listaMostarProducto = this.mostrarMetricasProducto(this.cliente.usoMetricaProducto,numeroSemanaActual)
+			}
+			else{
+				this.listaMostarFichasValidadas.numeroSemanaActual = numeroSemanaActual
+				this.listaMostarFichasValidadas.listaMostarFDA = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,numeroSemanaActual)
+			}
 		},
 		mostarDatosUsoTipoUsuarioResumidoMaster(listaUsoMetricaReducido,objView,numeroSemanaAño) {
 			var lista = _.filter(listaUsoMetricaReducido,{'numeroSemanaAño' : numeroSemanaAño})
@@ -469,7 +510,27 @@ export default {
 				listaVacia.push({'nombre':nombre,'cantidad': cantidadObjMetrica })
 			})
 			return listaVacia;
+		},
+		mostarFichasValidadas(listaFDA,nombrePerido)
+		{
+			//Me falta el let vm ? no lo se....
+			var listaTipoPeriodo = _.uniq(_.map(listaFDA,'nombreTipoPeriodo'))
+
+			var listaVacia = []
+			_.each(listaTipoPeriodo,function(nombreTipoPeriodo){
+
+				var objMetrica = _.find(listaFDA,{'nombrePerido' : nombrePerido,'nombreTipoPeriodo' : nombreTipoPeriodo})
+				var cantidadObjMetrica = 0
+				if(objMetrica !== undefined)
+				{
+					cantidadObjMetrica = objMetrica.cantidad
+				}
+
+				listaVacia.push({'nombre':nombreTipoPeriodo,'cantidad': cantidadObjMetrica })
+			})
+			return listaVacia;
 		}
+		
 	},
 	watch: {
 		seleccionSemana: function (val) {			
@@ -491,9 +552,21 @@ export default {
 			ruta = "api.dashboard.kindall.io";
 		}
 		this.listaNumeroSemanaAñoFrontUsoResumido = _.uniq(_.map(this.cliente.usoMetricaResumida,'numeroSemanaAño')).sort(function(a,b){return a-b})
+
+		this.listaNumeroPeriodos = _.uniq(_.map(this.cliente.listaFichaValidadas,'nombrePerido')).sort(function(a,b){return a-b})
+
+
 		var ultimaSemana = this.listaNumeroSemanaAñoFrontUsoResumido[this.listaNumeroSemanaAñoFrontUsoResumido.length - 1]
+
+
+
 		this.mostrarUltimaAltaMarcaPermiso(this.cliente.estadoIntegraciones)
 		this.listaMostarUsoResumido.listaMostarProducto = this.mostrarMetricasProducto(this.cliente.usoMetricaProducto,ultimaSemana)
+
+		this.listaMostarFichasValidadas.listaMostarFDA = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,this.listaNumeroPeriodos[0])
+
+
+
 		this.mostarDatosUsoTipoUsuarioResumidoMaster(this.cliente.usoMetricaResumida,this.listaMostarUsoResumido,ultimaSemana)
         fetch("http://"+ruta+"/api/inconsistencias?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaInconsistencia = data)
      
@@ -520,6 +593,7 @@ export default {
         modalErorres: false,
         modalUsoTotalTipoUsuario: false,
         listaUltimasMarcas : [],
+        listaNumeroPeriodos : [],
         listaUsoTipoUsuarioResumidaFront : [],
         listaLoginUnidadesSemanaTabla : [],
         listaLoginUnidadesSemanaTablaVista : [],
@@ -531,6 +605,10 @@ export default {
 			listaMostarWeb : [],
 			listaMostarMobile : [],
 			listaMostarProducto : [],
+		},
+		listaMostarFichasValidadas : {
+			numeroSemanaActual : 0,
+			listaMostarFDA : [],
 		},
         listaUsoJefatura : [],
         listaUsoGerencia : [],
