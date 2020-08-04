@@ -417,9 +417,10 @@ export default {
 					return;
 				}
 			}
-			this.listaMostarUsoResumido.numeroSemanaActual = this.listaNumeroSemanaAñoFrontUsoResumido[indiceRequerido]
-			this.mostarDatosUsoTipoUsuarioResumidoMaster(this.cliente.usoMetricaResumida,this.listaMostarUsoResumido,this.listaMostarUsoResumido.numeroSemanaActual)
-			this.listaMostarUsoResumido.listaMostarProducto = this.mostrarMetricasProducto(this.cliente.usoMetricaProducto,this.listaMostarUsoResumido.numeroSemanaActual)
+			var numeroSemanaActual = this.listaNumeroSemanaAñoFrontUsoResumido[indiceRequerido];
+			this.listaMostarUsoResumido.numeroSemanaActual = numeroSemanaActual
+			this.mostarDatosUsoTipoUsuarioResumidoMaster(this.cliente.usoMetricaResumida,this.listaMostarUsoResumido,numeroSemanaActual)
+			this.listaMostarUsoResumido.listaMostarProducto = this.mostrarMetricasProducto(this.cliente.usoMetricaProducto,numeroSemanaActual)
 		},
 		mostarDatosUsoTipoUsuarioResumidoMaster(listaUsoMetricaReducido,objView,numeroSemanaAño) {
 			var lista = _.filter(listaUsoMetricaReducido,{'numeroSemanaAño' : numeroSemanaAño})
@@ -490,9 +491,10 @@ export default {
 			ruta = "api.dashboard.kindall.io";
 		}
 		this.listaNumeroSemanaAñoFrontUsoResumido = _.uniq(_.map(this.cliente.usoMetricaResumida,'numeroSemanaAño')).sort(function(a,b){return a-b})
+		var ultimaSemana = this.listaNumeroSemanaAñoFrontUsoResumido[this.listaNumeroSemanaAñoFrontUsoResumido.length - 1]
 		this.mostrarUltimaAltaMarcaPermiso(this.cliente.estadoIntegraciones)
-		this.listaMostarUsoResumido.listaMostarProducto = this.mostrarMetricasProducto(this.cliente.usoMetricaProducto,this.listaNumeroSemanaAñoFrontUsoResumido.length - 1)
-		this.mostarDatosUsoTipoUsuarioResumidoMaster(this.cliente.usoMetricaResumida,this.listaMostarUsoResumido,this.listaNumeroSemanaAñoFrontUsoResumido[this.listaNumeroSemanaAñoFrontUsoResumido.length - 1])
+		this.listaMostarUsoResumido.listaMostarProducto = this.mostrarMetricasProducto(this.cliente.usoMetricaProducto,ultimaSemana)
+		this.mostarDatosUsoTipoUsuarioResumidoMaster(this.cliente.usoMetricaResumida,this.listaMostarUsoResumido,ultimaSemana)
         fetch("http://"+ruta+"/api/inconsistencias?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaInconsistencia = data)
      
     },
