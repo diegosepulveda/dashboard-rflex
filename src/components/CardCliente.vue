@@ -54,7 +54,7 @@
 					<td>
 						<v-icon @click="moverSemana('back','FDA')">mdi-chevron-left</v-icon>
 					</td>
-					<td>
+					<td v-bind:class="{ periodoActual: listaMostarFichasValidadas.objActualFDA.periodoActual === 1,periodoAnterior: listaMostarFichasValidadas.idperiodoAnterior ===  listaMostarFichasValidadas.objActualFDA.idperiodo}">
 						{{listaMostarFichasValidadas.objActualFDA.fechaInicio}} - {{listaMostarFichasValidadas.objActualFDA.fechaTermino}}
 					</td>
 					<td>
@@ -572,6 +572,7 @@ export default {
 				indicePeriodoAnterior  = this.listaNumeroPeriodos[indicePeriodoActual - 1]
 				this.listaMostarFichasValidadas.objActualFDA = _.find(this.cliente.listaFichaValidadas,{'idperiodo': indicePeriodoAnterior});
 				this.listaMostarFichasValidadas.numeroPeriodoActual = indicePeriodoAnterior
+				this.listaMostarFichasValidadas.idperiodoAnterior = indicePeriodoAnterior
 				// console.log(numeroPeriodoActual,'numeroPeriodoActual')
 				// console.log(objPeriodoAnterior,'objPeriodoAnterior')
 			}
@@ -637,6 +638,7 @@ export default {
 		},
 		listaMostarFichasValidadas : {
 			numeroPeriodoActual : 0,
+			idperiodoAnterior : 0,
 			objActualFDA : {
 				'fechaInicio' : '',
 				'fechaTermino' : ''
@@ -723,6 +725,16 @@ table{
 
 .errorMarcaDanger{
 	color : red;
+	font-weight: bold;
+
+}
+
+.periodoActual{
+	font-weight: bold;
+}
+
+.periodoAnterior{
+	color : #1976d2;
 	font-weight: bold;
 
 }
