@@ -32,16 +32,21 @@
 						<v-icon @click="moverSemana('forward')">mdi-chevron-right</v-icon>
 					</td>
 				</tr>
+			</table>
+			<table >
 				<tr>
-					<td>Usuarios</td>
-					<td>Admins</td>
-					<td>RRHH</td>
+					<td></td>
+					<td class="borde">Usuarios</td>
+					<td class="borde">Admins</td>
+					<td class="borde">RRHH</td>
 				</tr>
-				<tr>
-					<td v-for="(numero , index) in listaMostarUsoResumido.listaMostarWeb" :key="index" >{{numero}}</td>
+				<tr class="borde">
+					<td class="borde">Web</td>
+					<td class="borde" v-for="(numero , index) in listaMostarUsoResumido.listaMostarWeb" :key="index" >{{numero}}</td>
 				</tr>
-				<tr>
-					<td v-for="(numero , index) in listaMostarUsoResumido.listaMostarMobile" :key="index" >{{numero}}</td>
+				<tr class="borde">
+					<td class="borde">Mobile</td>
+					<td class="borde" v-for="(numero , index) in listaMostarUsoResumido.listaMostarMobile" :key="index" >{{numero}}</td>
 				</tr>
 			</table>
 
@@ -737,6 +742,14 @@ table{
 	color : #1976d2;
 	font-weight: bold;
 
+}
+
+table {
+  border-collapse: collapse;
+}
+
+table.borde, th.borde, td.borde {
+  border: 1px solid black;
 }
 
 td.boton {
