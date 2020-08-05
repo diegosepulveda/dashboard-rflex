@@ -103,9 +103,6 @@
 			
 			
 
-
-
-
           </v-col>
           <v-col>
 			<v-progress-circular v-if="!ocultarInformacionYMostrarSpinner"
@@ -124,10 +121,24 @@
 					<td>{{item.cantidad}}</td>
 				</tr>
 			</table>
+			
 			<ul class="letraChica" style="list-style-type:none;">
 				<li style="text-align: start;font-weight: bold;text-decoration: underline;">Numero Personas</li>
 				<li style="text-align: start;" v-for="(obj , index) in listaNumeroPersonas" :key="index">{{obj.nombre}} : {{obj.cantidad}} </li>
 			</ul>
+
+			<ul class="letraChica" style="list-style-type:none;">
+				<li style="text-align: start;font-weight: bold;text-decoration: underline;">Numero cuentas confirmadas</li>
+				<li style="text-align: start;" v-for="(obj , index) in listaConfirmadosCuentas.listaConfirmados" :key="index">{{obj.nombre}}  {{obj.cantidad}} / {{obj.totalSumado}} ({{obj.totalPorcentaje}}) </li>
+			</ul>
+
+			<ul class="letraChica" style="list-style-type:none;">
+				<li style="text-align: start;font-weight: bold;text-decoration: underline;">Numero Confirmados Mobile</li>
+				<li style="text-align: start;" v-for="(obj , index) in listaConfirmadosCuentas.listaTotalConfirmadosMobile" :key="index">{{obj.nombre}} : {{obj.cantidad}} </li>
+			</ul>
+
+
+
           </v-col>
       </v-row>
       <v-row>
@@ -642,6 +653,11 @@ export default {
 		this.listaNumeroPersonas = this.cliente.listaNumeroPersonas
 
 
+		this.listaConfirmadosCuentas.listaConfirmados = _.filter(this.cliente.listaConfirmadosCuentas.listaConfirmados,{'confirmacion' : 1})
+		this.listaConfirmadosCuentas.listaTotalConfirmadosMobile = this.cliente.listaConfirmadosCuentas.listaTotalConfirmadosMobile
+
+
+
 
 		//FDAs validadas
 		// this.listaMostarFichasValidadas.numeroPeriodoActual = this.listaNumeroPeriodos[0]
@@ -688,6 +704,10 @@ export default {
         listaNumeroSemanaAño : [],
         listaNumeroSemanaAñoFrontUsoResumido : [],
         listaUsoCompleta : [],
+        listaConfirmadosCuentas : {
+			listaConfirmados : [],
+			listaTotalConfirmadosMobile : [],
+		},
         listaNumeroPersonas : [],
         listaMostarUsoResumido : {
 			numeroSemanaActual : 0,
