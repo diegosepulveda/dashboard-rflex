@@ -512,23 +512,23 @@ export default {
 			})
 			return listaVacia;
 		},
-		mostarFichasValidadas(listaFDA,nombrePeriodo)
+		mostarFichasValidadas(listaFDA,idperiodo)
 		{
 			//Me falta el let vm ? no lo se....
-			var listaTipoPeriodo = _.uniq(_.map(listaFDA,'nombreTipoPeriodo'))
+			// var listaTipoPeriodo = _.uniq(_.map(listaFDA,'nombreTipoPeriodo'))
 
 			var listaVacia = []
-			_.each(listaTipoPeriodo,function(nombreTipoPeriodo){
+			// _.each(listaTipoPeriodo,function(nombreTipoPeriodo){
 
-				var objMetrica = _.find(listaFDA,{'nombrePeriodo' : nombrePeriodo,'nombreTipoPeriodo' : nombreTipoPeriodo})
+				var objMetrica = _.find(listaFDA,{'idperiodo' : idperiodo})
 				var cantidadObjMetrica = 0
 				if(objMetrica !== undefined)
 				{
 					cantidadObjMetrica = objMetrica.cantidad
 				}
 
-				listaVacia.push({'nombre':nombreTipoPeriodo,'cantidad': cantidadObjMetrica })
-			})
+				listaVacia.push({'cantidad': cantidadObjMetrica })
+			// })
 			return listaVacia
 			
 		}
@@ -592,7 +592,6 @@ export default {
 		//FDAs validadas
 		// this.listaMostarFichasValidadas.numeroPeriodoActual = this.listaNumeroPeriodos[0]
 		// this.listaMostarFichasValidadas.objActualFDA = _.find(this.cliente.listaFichaValidadas,{'nombrePeriodo': this.listaNumeroPeriodos[0]})
-		console.log(this.listaMostarFichasValidadas.objActualFDA)
 		this.listaMostarFichasValidadas.listaMostarFDA = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,this.listaMostarFichasValidadas.numeroPeriodoActual)
 
 
