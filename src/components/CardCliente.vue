@@ -287,20 +287,6 @@ export default {
 				return '#B2DFDB'
 			}
 			return undefined;
-		},
-		rangoSemanaFDA : function(){
-			var fechaInicio = ''
-			var fechaTermino = ''
-			if(this.listaMostarFichasValidadas.listaMostarFDACompleta[this.listaMostarFichasValidadas.numeroSemanaActual] !== undefined)
-			{
-				fechaInicio = this.listaMostarFichasValidadas.listaMostarFDACompleta[this.listaMostarFichasValidadas.numeroSemanaActual].fechaInicio
-			}
-			if(this.listaMostarFichasValidadas.listaMostarFDACompleta[this.listaMostarFichasValidadas.numeroSemanaActual] !== undefined)
-			{
-				fechaInicio = this.listaMostarFichasValidadas.listaMostarFDACompleta[this.listaMostarFichasValidadas.numeroSemanaActual].fechaTermino
-			}
-
-			return fechaInicio+"-"+fechaTermino
 		}
 	},
     methods : {
@@ -439,7 +425,7 @@ export default {
 			}
 			else {
 				//Aca va el movimiento nuevo
-				numeroSemana = this.listaMostarFichasValidadas.numeroSemanaActual
+				numeroSemana = this.listaMostarFichasValidadas.numeroPeriodoActual
 				objCompleto = this.listaNumeroPeriodos
 
 			}
@@ -473,10 +459,9 @@ export default {
 				this.listaMostarUsoResumido.listaMostarProducto = this.mostrarMetricasProducto(this.cliente.usoMetricaProducto,numeroSemanaActual)
 			}
 			else{
-				this.listaMostarFichasValidadas.numeroSemanaActual = numeroSemanaActual
-				this.listaMostarFichasValidadas.listaMostarFDA = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,numeroSemanaActual)[0]
-				this.listaMostarFichasValidadas.listaMostarFDACompleta = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,numeroSemanaActual)[1]
-				this.listaMostarFichasValidadas.objActualFDA = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,numeroSemanaActual)[2]
+				this.listaMostarFichasValidadas.numeroPeriodoActual = numeroSemanaActual
+				this.listaMostarFichasValidadas.listaMostarFDA = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,numeroSemanaActual)
+				this.listaMostarFichasValidadas.objActualFDA = _.find(this.cliente.listaFichaValidadas,{'idperiodo' : numeroSemanaActual}) 
 			}
 		},
 		mostarDatosUsoTipoUsuarioResumidoMaster(listaUsoMetricaReducido,objView,numeroSemanaAño) {
@@ -544,9 +529,8 @@ export default {
 
 				listaVacia.push({'nombre':nombreTipoPeriodo,'cantidad': cantidadObjMetrica })
 			})
-			return [
-				listaVacia,listaFDA,_.find(listaFDA,{'nombrePeriodo' : nombrePeriodo})
-			];
+			return listaVacia
+			
 		}
 		
 	},
@@ -570,22 +554,46 @@ export default {
 			ruta = "api.dashboard.kindall.io";
 		}
 		this.listaNumeroSemanaAñoFrontUsoResumido = _.uniq(_.map(this.cliente.usoMetricaResumida,'numeroSemanaAño')).sort(function(a,b){return a-b})
-
-		this.listaNumeroPeriodos = _.uniq(_.map(this.cliente.listaFichaValidadas,'nombrePeriodo')).sort(function(a,b){return a-b})
-		
-
 		var ultimaSemana = this.listaNumeroSemanaAñoFrontUsoResumido[this.listaNumeroSemanaAñoFrontUsoResumido.length - 1]
 
+		this.listaNumeroPeriodos = _.map(this.cliente.listaFichaValidadas,'idperiodo').sort(function(a,b){return a-b})
+		// console.log(this.listaNumeroPeriodos)
+		var objPeriodoActual = _.find(this.cliente.listaFichaValidadas,{'periodoActual': 1});
+		var indicePeriodoAnterior
+		var indicePeriodoActual = -1
+		// console.log(objPeriodoActual,'objPeriodoActual')
+		if(objPeriodoActual != undefined)
+		{
+			this.listaMostarFichasValidadas.objActualFDA = objPeriodoActual
+			indicePeriodoActual = this.listaNumeroPeriodos.indexOf(objPeriodoActual.idperiodo)
+			this.listaMostarFichasValidadas.numeroPeriodoActual = indicePeriodoActual
+			if(indicePeriodoActual > 0)
+			{
+				indicePeriodoAnterior  = this.listaNumeroPeriodos[indicePeriodoActual - 1]
+				this.listaMostarFichasValidadas.objActualFDA = _.find(this.cliente.listaFichaValidadas,{'idperiodo': indicePeriodoAnterior});
+				this.listaMostarFichasValidadas.numeroPeriodoActual = indicePeriodoAnterior
+				// console.log(numeroPeriodoActual,'numeroPeriodoActual')
+				// console.log(objPeriodoAnterior,'objPeriodoAnterior')
+			}
+		}
+		
 
 
+
+		//Ultima integraciones
 		this.mostrarUltimaAltaMarcaPermiso(this.cliente.estadoIntegraciones)
+
+		//Metricas producto
 		this.listaMostarUsoResumido.listaMostarProducto = this.mostrarMetricasProducto(this.cliente.usoMetricaProducto,ultimaSemana)
 
-		this.listaMostarFichasValidadas.numeroSemanaActual = this.listaNumeroPeriodos[0]
-		console.log(this.cliente.listaFichaValidadas)
-		this.listaMostarFichasValidadas.objActualFDA = _.find(this.cliente.listaFichaValidadas,{'nombrePeriodo': this.listaNumeroPeriodos[0]})
-		this.listaMostarFichasValidadas.listaMostarFDA = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,this.listaNumeroPeriodos[0])[0]
-		this.listaMostarFichasValidadas.listaMostarFDACompleta = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,this.listaNumeroPeriodos[0])[1]
+
+
+
+		//FDAs validadas
+		// this.listaMostarFichasValidadas.numeroPeriodoActual = this.listaNumeroPeriodos[0]
+		// this.listaMostarFichasValidadas.objActualFDA = _.find(this.cliente.listaFichaValidadas,{'nombrePeriodo': this.listaNumeroPeriodos[0]})
+		console.log(this.listaMostarFichasValidadas.objActualFDA)
+		this.listaMostarFichasValidadas.listaMostarFDA = this.mostarFichasValidadas(this.cliente.listaFichaValidadas,this.listaMostarFichasValidadas.numeroPeriodoActual)
 
 
 
@@ -629,13 +637,12 @@ export default {
 			listaMostarProducto : [],
 		},
 		listaMostarFichasValidadas : {
-			numeroSemanaActual : 0,
+			numeroPeriodoActual : 0,
 			objActualFDA : {
 				'fechaInicio' : '',
 				'fechaTermino' : ''
 			},
-			listaMostarFDA : [],
-			listaMostarFDACompleta : [],
+			listaMostarFDA : []
 		},
         listaUsoJefatura : [],
         listaUsoGerencia : [],
