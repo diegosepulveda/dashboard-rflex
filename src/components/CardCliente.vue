@@ -67,8 +67,15 @@
 					</td>
 				</tr>
 			</table>
-			<ul>
+			
+			<ul style="list-style-type:none;">
+				<li style="text-align: start;font-weight: bold;text-decoration: underline;">FDAs</li>
 				<li style="text-align: start;" v-for="(obj , index) in listaMostarFichasValidadas.listaMostarFDA" :key="index">FDAs Validadas : {{obj.cantidad}} </li>
+			</ul>
+			
+			<ul style="list-style-type:none;">
+				<li style="text-align: start;font-weight: bold;text-decoration: underline;">Numero Personas</li>
+				<li style="text-align: start;" v-for="(obj , index) in listaNumeroPersonas" :key="index">{{obj.nombre}} : {{obj.cantidad}} </li>
 			</ul>
 
 
@@ -591,7 +598,7 @@ export default {
 
 		//Metricas producto
 		this.listaMostarUsoResumido.listaMostarProducto = this.mostrarMetricasProducto(this.cliente.usoMetricaProducto,ultimaSemana)
-
+		this.listaNumeroPersonas = this.cliente.listaNumeroPersonas
 
 
 
@@ -635,6 +642,7 @@ export default {
         listaNumeroSemanaAño : [],
         listaNumeroSemanaAñoFrontUsoResumido : [],
         listaUsoCompleta : [],
+        listaNumeroPersonas : [],
         listaMostarUsoResumido : {
 			numeroSemanaActual : 0,
 			listaMostarWeb : [],
