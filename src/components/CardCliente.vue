@@ -9,6 +9,9 @@
         <v-row>
           <v-col class="letraChica">
 			<ul>
+				<li  style="font-weight: bold;text-decoration: underline; list-style-type:none;">
+					Últimos Registros Integración
+				</li>
 				<li style="text-align: start;">
 					Alta: <span v-bind:class="{ errorMarcaWarning: ultimaAltaTiempo.tipoAdvertencia === 'warning',errorMarcaDanger: ultimaAltaTiempo.tipoAdvertencia === 'danger' }">{{ultimaAltaTiempo.cantidad || '-'}}</span> 
 				</li>
@@ -21,6 +24,15 @@
 			</ul>
 			
 			<table>
+				<tr>
+					<td>
+					</td>
+					<td style="font-weight: bold;text-decoration: underline; ">
+						Usuarios activos
+					</td>
+					<td>
+					</td>
+				</tr>
 				<tr>
 					<td>
 						<v-icon @click="moverSemana('back')">mdi-chevron-left</v-icon>
@@ -50,11 +62,28 @@
 				</tr>
 			</table>
 
-			<ul>
-				<li style="text-align: start;" v-for="(obj , index) in listaMostarUsoResumido.listaMostarProducto" :key="index">{{obj.nombre}} : {{obj.cantidad}} </li>
-			</ul>
+			<table>
+				<tr>
+					<td ></td>
+					<td style="font-weight: bold;text-decoration: underline;">Métricas Producto</td>
+					<td ></td>
+				</tr>
+				<tr v-for="(obj , index) in listaMostarUsoResumido.listaMostarProducto" :key="index">
+					<td></td>
+					<td>
+						{{obj.nombre}} : {{obj.cantidad}}
+					</td>
+					<td></td>
+				</tr>
+			</table>
+			
 
 			<table>
+				<tr>
+					<td ></td>
+					<td style="font-weight: bold;text-decoration: underline;">FDAs</td>
+					<td ></td>
+				</tr>
 				<tr>
 					<td>
 						<v-icon @click="moverSemana('back','FDA')">mdi-chevron-left</v-icon>
@@ -69,26 +98,36 @@
 			</table>
 			
 			<ul style="list-style-type:none;">
-				<li style="text-align: start;font-weight: bold;text-decoration: underline;">FDAs</li>
 				<li style="text-align: start;" v-for="(obj , index) in listaMostarFichasValidadas.listaMostarFDA" :key="index">FDAs Validadas : {{obj.cantidad}} </li>
 			</ul>
 			
-			<ul style="list-style-type:none;">
-				<li style="text-align: start;font-weight: bold;text-decoration: underline;">Numero Personas</li>
-				<li style="text-align: start;" v-for="(obj , index) in listaNumeroPersonas" :key="index">{{obj.nombre}} : {{obj.cantidad}} </li>
-			</ul>
+			
 
 
 
 
           </v-col>
           <v-col>
-              <table>
-                <tr v-for="(item) in listaInconsistencia" :key="item.nombre + item.cantidad">
-                    <td>{{item.nombre}}</td>
-                    <td>{{item.cantidad}}</td>
-                </tr>
-              </table>
+			<v-progress-circular v-if="!ocultarInformacionYMostrarSpinner"
+					indeterminate
+					color="red"
+			></v-progress-circular>
+				
+			<table v-if="ocultarInformacionYMostrarSpinner">
+				<tr>
+					<td colspan="2" style="font-weight: bold;text-decoration: underline;">Inconsistencias</td>
+				</tr>
+
+				
+				<tr v-for="(item) in listaInconsistencia" :key="item.nombre + item.cantidad">
+					<td>{{item.nombre}}</td>
+					<td>{{item.cantidad}}</td>
+				</tr>
+			</table>
+			<ul class="letraChica" style="list-style-type:none;">
+				<li style="text-align: start;font-weight: bold;text-decoration: underline;">Numero Personas</li>
+				<li style="text-align: start;" v-for="(obj , index) in listaNumeroPersonas" :key="index">{{obj.nombre}} : {{obj.cantidad}} </li>
+			</ul>
           </v-col>
       </v-row>
       <v-row>
@@ -560,7 +599,9 @@ export default {
 	},
     mounted : function() {
 		var direccion = window.location.href;
+		let vm = this;
 		var ruta = "api.dashboard.test";
+		this.ocultarInformacionYMostrarSpinner = false;
 		if(direccion.includes('kindall'))
 		{
 			ruta = "api.dashboard.kindall.io";
@@ -610,7 +651,12 @@ export default {
 
 
 		this.mostarDatosUsoTipoUsuarioResumidoMaster(this.cliente.usoMetricaResumida,this.listaMostarUsoResumido,ultimaSemana)
-        fetch("http://"+ruta+"/api/inconsistencias?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaInconsistencia = data)
+        fetch("http://"+ruta+"/api/inconsistencias?cliente="+this.cliente.nombre).then((data)=>data.json()).then(
+				function(data) {
+					vm.listaInconsistencia = data
+					vm.ocultarInformacionYMostrarSpinner = true;
+				}
+			)
      
     },
     data: () => ({
