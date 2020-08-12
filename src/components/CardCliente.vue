@@ -105,22 +105,24 @@
 
           </v-col>
           <v-col>
-			<v-progress-circular v-if="!ocultarInformacionYMostrarSpinner"
-					indeterminate
-					color="red"
-			></v-progress-circular>
-				
-			<table v-if="ocultarInformacionYMostrarSpinner">
-				<tr>
-					<td colspan="2" style="font-weight: bold;text-decoration: underline;">Inconsistencias</td>
-				</tr>
+			<v-btn text @click="getDataInconsistencias()">Inconsistencias</v-btn>
+			
+				<v-progress-circular v-show="!ocultarInformacionYMostrarSpinner && mostrarInconsistencias"
+						indeterminate
+						color="red"
+				></v-progress-circular>
+					
+				<table v-show="ocultarInformacionYMostrarSpinner || mostrarInconsistencias">
+					<tr>
+						<td colspan="2" style="font-weight: bold;text-decoration: underline;">Inconsistencias</td>
+					</tr>
 
-				
-				<tr v-for="(item) in listaInconsistencia" :key="item.nombre + item.cantidad">
-					<td>{{item.nombre}}</td>
-					<td>{{item.cantidad}}</td>
-				</tr>
-			</table>
+					
+					<tr v-for="(item) in listaInconsistencia" :key="item.nombre + item.cantidad">
+						<td>{{item.nombre}}</td>
+						<td>{{item.cantidad}}</td>
+					</tr>
+				</table>
 			
 			<ul class="letraChica" style="list-style-type:none;">
 				<li style="text-align: start;font-weight: bold;text-decoration: underline;">Numero Personas</li>
@@ -593,6 +595,24 @@ export default {
 			// })
 			return listaVacia
 			
+		},
+		getDataInconsistencias()
+		{
+			let vm = this;
+			var direccion = window.location.href;
+			var ruta = "api.dashboard.test";
+			vm.ocultarInformacionYMostrarSpinner = false;
+			if(direccion.includes('kindall'))
+			{
+				ruta = "api.dashboard.kindall.io";
+			}
+			vm.mostrarInconsistencias = true;
+			fetch("http://"+ruta+"/api/inconsistencias?cliente="+vm.cliente.nombre).then((data)=>data.json()).then(
+				function(data) {
+					vm.listaInconsistencia = data
+					vm.ocultarInformacionYMostrarSpinner = true;
+				}
+			)
 		}
 		
 	},
@@ -609,14 +629,7 @@ export default {
 		},
 	},
     mounted : function() {
-		var direccion = window.location.href;
-		let vm = this;
-		var ruta = "api.dashboard.test";
-		this.ocultarInformacionYMostrarSpinner = false;
-		if(direccion.includes('kindall'))
-		{
-			ruta = "api.dashboard.kindall.io";
-		}
+		
 		this.listaNumeroSemanaAñoFrontUsoResumido = _.uniq(_.map(this.cliente.usoMetricaResumida,'numeroSemanaAño')).sort(function(a,b){return a-b})
 		var ultimaSemana = this.listaNumeroSemanaAñoFrontUsoResumido[this.listaNumeroSemanaAñoFrontUsoResumido.length - 1]
 
@@ -667,17 +680,13 @@ export default {
 
 
 		this.mostarDatosUsoTipoUsuarioResumidoMaster(this.cliente.usoMetricaResumida,this.listaMostarUsoResumido,ultimaSemana)
-        fetch("http://"+ruta+"/api/inconsistencias?cliente="+this.cliente.nombre).then((data)=>data.json()).then(
-				function(data) {
-					vm.listaInconsistencia = data
-					vm.ocultarInformacionYMostrarSpinner = true;
-				}
-			)
+        
      
     },
     data: () => ({
         tab: null,
         modalUso: false,
+        mostrarInconsistencias: false,
         mostrarError: '',
         ultimaMarcaTiempo: {
 					'tipoAdvertencia' : null,

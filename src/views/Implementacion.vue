@@ -5,7 +5,7 @@
       <v-container fluid>
         <v-row>		
 			<v-col v-for="objCliente in listaClientes" :key="objCliente.id" md="6" sm="12" lg="3">
-				<card-cliente :cliente="objCliente">{{objCliente.nombreCompleto}}</card-cliente>
+				<card-cliente-implementacion :cliente="objCliente">{{objCliente.nombreCompleto}}</card-cliente-implementacion>
 			</v-col>
         </v-row>
       </v-container>
@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import CardCliente from "@/components/CardCliente.vue";
+import CardClienteImplementacion from "@/components/CardClienteImplementacion.vue";
 import AppBar from "@/components/AppBar.vue";
 import _ from 'lodash'
 
@@ -27,9 +27,8 @@ export default {
     source: String
   },
   components: {
-    CardCliente,
+    CardClienteImplementacion,
     AppBar
-    
   },
 	mounted : function() {
 		var direccion = window.location.href;
