@@ -12,6 +12,26 @@
 				<li style="text-align: start;" v-for="(obj , index) in listaNumeroPersonas" :key="index">{{obj.nombre}} : {{obj.cantidad}} </li>
 			</ul>
 			</v-col>
+			<v-col>
+				<table>
+					<tr>
+						<td ></td>
+						<td style="font-weight: bold;text-decoration: underline;">Informacion Turnos</td>
+						<td ></td>
+					</tr>
+					<tr>
+						<td>
+							<v-icon @click="moverSemana('back')">mdi-chevron-left</v-icon>
+						</td>
+						<td>
+							{{ listaCantidadTurnosPorSemana.numeroSemanaActual }}
+						</td>
+						<td>
+							<v-icon @click="moverSemana('forward')">mdi-chevron-right</v-icon>
+						</td>
+					</tr>
+				</table>
+			</v-col>
 		</v-row>
 
         
@@ -31,7 +51,7 @@
 </template>
 
 <script>
-// import _ from 'lodash'
+import _ from 'lodash'
 
 export default {
     name: "CardClienteImplementacion",
@@ -50,28 +70,73 @@ export default {
 		}
 	},
     methods : {
-        
-		
+        moverSemana(direccion) {
+			var numeroSemana
+			var objCompleto
+
+			numeroSemana = this.listaCantidadTurnosPorSemana.numeroSemanaActual
+			objCompleto = _.keys(_.mapKeys(_.groupBy(_.filter(this.listaCantidadTurnosPorSemana,{'tipo':'tipo_ausencia'}),'numeroSemana'),(value) => value[0].primerDiaSemana+'-'+value[0].ultimoDiaSemana))
+
+			var indiceActual = objCompleto.indexOf(numeroSemana)
+			var largoTotal = objCompleto.length
+			var indiceRequerido
+
+			if(direccion == 'back')
+			{
+				indiceRequerido = indiceActual - 1;
+				if(indiceRequerido == -1)
+				{
+					return;
+				}
+			}
+			else
+			{
+				indiceRequerido = indiceActual + 1;
+				if(indiceRequerido == largoTotal)
+				{
+					return;
+				}
+			}
+			var numeroSemanaActual = objCompleto[indiceRequerido];
+			this.listaCantidadTurnosPorSemana.numeroSemanaActual = numeroSemanaActual
+			console.log(this.listaCantidadTurnosPorSemana.numeroSemanaActual)
+			// this.formatDataListaCantidadTurnosPorSemana(this.cliente.listaCantidadTurnosPorSemana,numeroSemanaActual)
+			
+		},
+		formatDataListaCantidadTurnosPorSemana(listaCantidadTurnosPorSemana,numeroSemana) {
+			var listaNumeroSemanaDetalleTurno = _.mapKeys(_.groupBy(_.filter(listaCantidadTurnosPorSemana,{'tipo':'detalle_turno'}),'numeroSemana'),(value) => value[0].primerDiaSemana+'-'+value[0].ultimoDiaSemana)
+			var listaNumeroSemanaTipoAusencia = _.mapKeys(_.groupBy(_.filter(listaCantidadTurnosPorSemana,{'tipo':'tipo_ausencia'}),'numeroSemana'),(value) => value[0].primerDiaSemana+'-'+value[0].ultimoDiaSemana)
+			if(numeroSemana === undefined) {
+				numeroSemana = _.keys(listaNumeroSemanaTipoAusencia)[_.keys(listaNumeroSemanaTipoAusencia).length -1 ]
+			}
+
+			this.listaCantidadTurnosPorSemana.numeroSemanaActual = numeroSemana
+			this.listaCantidadTurnosPorSemana.listaNumeroSemanaDetalleTurno = listaNumeroSemanaDetalleTurno[numeroSemana]
+			this.listaCantidadTurnosPorSemana.listaNumeroSemanaTipoAusencia = listaNumeroSemanaTipoAusencia[numeroSemana]
+		}
 	},
 	watch: {
 		
 	},
     mounted : function() {
-		// var direccion = window.location.href;
-		// let vm = this;
-		// var ruta = "api.dashboard.test";
-		// if(direccion.includes('kindall'))
-		// {
-		// 	ruta = "api.dashboard.kindall.io";
-		// }
 		this.listaNumeroPersonas = this.cliente.listaNumeroPersonas
 		this.listaCantidadTurnosPorSemana = this.cliente.listaCantidadTurnosPorSemana
 		this.listaUnidadAdmin = this.cliente.listaUnidadAdmin
+
+		this.formatDataListaCantidadTurnosPorSemana(this.cliente.listaCantidadTurnosPorSemana)
+
+		console.log(this.listaNumeroPersonas)
+		console.log(this.listaCantidadTurnosPorSemana)
+		console.log(this.listaUnidadAdmin)
      
     },
     data: () => ({
+		listaCantidadTurnosPorSemana : {
+			numeroSemanaActual : 0,
+			listaNumeroSemanaDetalleTurno : [],
+			listaNumeroSemanaTipoAusencia : []
+		},
         listaNumeroPersonas : [],
-        listaCantidadTurnosPorSemana : [],
         listaUnidadAdmin : [],
     })
 };
