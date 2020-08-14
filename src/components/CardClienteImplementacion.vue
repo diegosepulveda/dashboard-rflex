@@ -62,18 +62,7 @@
 		</v-row>
 
         
-      <v-row>
-          <v-col>
-                <v-chip v-for="(objIntegracion, nombre) in cliente.integraciones" :key="objIntegracion.nombre" class="ma-2" x-small v-bind:class="{ success: objIntegracion }"  >{{nombre}}</v-chip>
-				<v-chip v-if="cliente.replica === false" class="ma-2 red" text-color="white" x-small>Error Replica</v-chip>
-          </v-col>
-      </v-row>
-
-    <v-card-actions>
-		<v-btn text >Uso Unidades</v-btn>
-		<v-btn text >Uso Total</v-btn>
-		<v-btn text >Errores</v-btn>
-    </v-card-actions>
+  
   </v-card>
 </template>
 
