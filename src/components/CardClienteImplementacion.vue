@@ -60,9 +60,13 @@
 				</table>
 			</v-col>
 		</v-row>
-
         
-  
+      <v-row>
+          <v-col>
+				<v-chip v-if="cliente.replica === false" class="ma-2 red" text-color="white" x-small>Error Replica</v-chip>
+          </v-col>
+      </v-row>
+
   </v-card>
 </template>
 
