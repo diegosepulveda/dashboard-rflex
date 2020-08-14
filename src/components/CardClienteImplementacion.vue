@@ -7,27 +7,54 @@
         </v-row>
 		<v-row>
 			<v-col>
-				<ul class="letraChica" style="list-style-type:none;">
-				<li style="text-align: start;font-weight: bold;text-decoration: underline;">Numero Personas</li>
-				<li style="text-align: start;" v-for="(obj , index) in listaNumeroPersonas" :key="index">{{obj.nombre}} : {{obj.cantidad}} </li>
-			</ul>
+				<ul class="letraChica sinTipoLista">
+					<li class="tituloLista">Número Personas</li>
+					<li class="estiloLista" v-for="(obj , index) in listaNumeroPersonas" :key="index">{{obj.nombre}} : {{obj.cantidad}} </li>
+				</ul>
+				<ul class="letraChica sinTipoLista">
+					<li class="tituloLista">Número Unidades Tipo</li>
+					<li class="estiloLista" v-for="(obj , index) in listaUnidadAdmin.cantidadUnidadesPorTipo" :key="index">{{obj.nombre}} : {{obj.cantidad}} </li>
+				</ul>
+				<ul class="letraChica sinTipoLista">
+					<li class="tituloLista">Número Admins</li>
+					<li class="estiloLista" v-for="(obj , index) in listaUnidadAdmin.totalAdminClasificados" :key="index">{{obj.nombre}} : {{obj.cantidad}} </li>
+				</ul>
+				<ul class="letraChica sinTipoLista">
+					<li class="tituloLista">Asociaciones Uso/No Uso</li>
+					<li class="estiloLista" v-for="(obj , index) in listaAltaccpuestoAsociacion" :key="index">
+							{{obj.nombre}} : {{obj.cantidad}}
+							<v-tooltip top>
+							<template v-slot:activator="{ on, attrs }">
+								<v-btn class="mejoraTooltipBoton" icon v-bind="attrs" v-on="on">
+								<v-icon class="mejoraTooltipIcono" color="grey lighten-1" size="17">mdi-help</v-icon>
+								</v-btn>
+							</template>
+							<span>{{obj.descripcion}}</span>
+							</v-tooltip>
+					</li>
+				</ul>
+				<ul class="letraChica sinTipoLista">
+					<li class="tituloLista">Altas No Gestionado</li>
+					<li class="estiloLista" v-for="(obj , index) in listaAltaSinUso" :key="index">{{obj.nombre}} : {{obj.cantidad}} </li>
+				</ul>
 			</v-col>
 			<v-col>
 				<table>
 					<tr>
-						<td ></td>
-						<td style="font-weight: bold;text-decoration: underline;">Informacion Turnos</td>
-						<td ></td>
+						<td colspan="3" style="font-weight: bold;text-decoration: underline;">Informacion Turnos</td>
 					</tr>
 					<tr>
-						<td>
-							<v-icon @click="moverSemana('back')">mdi-chevron-left</v-icon>
+						<td colspan="3">
+							<v-icon @click="moverSemana('back',listaCantidadTurnosPorSemana.numeroSemanaActual,listaCantidadTurnosPorSemana.listaNumeroSemanaDetalleTurno)">mdi-chevron-left</v-icon>
+							{{listaCantidadTurnosPorSemana.numeroSemanaActual}}
+							<v-icon @click="moverSemana('forward',listaCantidadTurnosPorSemana.numeroSemanaActual,listaCantidadTurnosPorSemana.listaNumeroSemanaDetalleTurno)">mdi-chevron-right</v-icon>
 						</td>
+					</tr>
+					<tr v-for="(obj,index) in listaCantidadTurnosPorSemana.listaNumeroSemanaDetalleTurno[listaCantidadTurnosPorSemana.numeroSemanaActual]" :key="index">
+						<td>{{obj.nombre}}</td>
+						<td>{{obj.cantidad}}</td>
 						<td>
-							{{ listaCantidadTurnosPorSemana.numeroSemanaActual }}
-						</td>
-						<td>
-							<v-icon @click="moverSemana('forward')">mdi-chevron-right</v-icon>
+							
 						</td>
 					</tr>
 				</table>
@@ -70,17 +97,15 @@ export default {
 		}
 	},
     methods : {
-        moverSemana(direccion) {
-			var numeroSemana
-			var objCompleto
-
-			numeroSemana = this.listaCantidadTurnosPorSemana.numeroSemanaActual
-			objCompleto = _.keys(_.mapKeys(_.groupBy(_.filter(this.listaCantidadTurnosPorSemana,{'tipo':'tipo_ausencia'}),'numeroSemana'),(value) => value[0].primerDiaSemana+'-'+value[0].ultimoDiaSemana))
+        moverSemana(direccion,numeroSemanaActual,lista) {
+			
+			var numeroSemana = numeroSemanaActual
+			var objCompleto = _.keys(lista)
 
 			var indiceActual = objCompleto.indexOf(numeroSemana)
 			var largoTotal = objCompleto.length
-			var indiceRequerido
 
+			var indiceRequerido
 			if(direccion == 'back')
 			{
 				indiceRequerido = indiceActual - 1;
@@ -97,51 +122,62 @@ export default {
 					return;
 				}
 			}
-			var numeroSemanaActual = objCompleto[indiceRequerido];
-			this.listaCantidadTurnosPorSemana.numeroSemanaActual = numeroSemanaActual
+			var numeroSemanaEncontrado = objCompleto[indiceRequerido]
+			this.listaCantidadTurnosPorSemana.numeroSemanaActual = numeroSemanaEncontrado
 			console.log(this.listaCantidadTurnosPorSemana.numeroSemanaActual)
-			// this.formatDataListaCantidadTurnosPorSemana(this.cliente.listaCantidadTurnosPorSemana,numeroSemanaActual)
-			
 		},
 		formatDataListaCantidadTurnosPorSemana(listaCantidadTurnosPorSemana,numeroSemana) {
-			var listaNumeroSemanaDetalleTurno = _.mapKeys(_.groupBy(_.filter(listaCantidadTurnosPorSemana,{'tipo':'detalle_turno'}),'numeroSemana'),(value) => value[0].primerDiaSemana+'-'+value[0].ultimoDiaSemana)
-			var listaNumeroSemanaTipoAusencia = _.mapKeys(_.groupBy(_.filter(listaCantidadTurnosPorSemana,{'tipo':'tipo_ausencia'}),'numeroSemana'),(value) => value[0].primerDiaSemana+'-'+value[0].ultimoDiaSemana)
+			var listaNumeroSemanaDetalleTurno = _.mapKeys(_.groupBy(listaCantidadTurnosPorSemana,'numeroSemana'),(value) => value[0].primerDiaSemana+'-'+value[0].ultimoDiaSemana)
 			if(numeroSemana === undefined) {
-				numeroSemana = _.keys(listaNumeroSemanaTipoAusencia)[_.keys(listaNumeroSemanaTipoAusencia).length -1 ]
+				numeroSemana = _.keys(listaNumeroSemanaDetalleTurno)[_.keys(listaNumeroSemanaDetalleTurno).length -1 ]
 			}
 
 			this.listaCantidadTurnosPorSemana.numeroSemanaActual = numeroSemana
-			this.listaCantidadTurnosPorSemana.listaNumeroSemanaDetalleTurno = listaNumeroSemanaDetalleTurno[numeroSemana]
-			this.listaCantidadTurnosPorSemana.listaNumeroSemanaTipoAusencia = listaNumeroSemanaTipoAusencia[numeroSemana]
+			this.listaCantidadTurnosPorSemana.listaNumeroSemanaDetalleTurno = listaNumeroSemanaDetalleTurno
+		},
+		formatDataAsociacion(lista) {
+			return _.map(_.groupBy(lista,'nombre'),function(valor){
+				return {
+					'nombre' : valor[0].nombre,
+					'cantidad' : _.find(valor,{'ocupado' : 1}).cantidad + '/' + _.find(valor,{'ocupado' : 0}).cantidad,
+					'descripcion' : valor[0].descripcion
+				}
+			})
 		}
+
 	},
 	watch: {
 		
 	},
     mounted : function() {
 		this.listaNumeroPersonas = this.cliente.listaNumeroPersonas
-		this.listaCantidadTurnosPorSemana = this.cliente.listaCantidadTurnosPorSemana
-		this.listaUnidadAdmin = this.cliente.listaUnidadAdmin
-
+		this.listaUnidadAdmin.cantidadUnidadesPorTipo = this.cliente.listaUnidadAdmin.cantidadUnidadesPorTipo
+		this.listaUnidadAdmin.totalAdminClasificados = this.cliente.listaUnidadAdmin.totalAdminClasificados
 		this.formatDataListaCantidadTurnosPorSemana(this.cliente.listaCantidadTurnosPorSemana)
 
-		console.log(this.listaNumeroPersonas)
-		console.log(this.listaCantidadTurnosPorSemana)
-		console.log(this.listaUnidadAdmin)
+		this.listaAltaccpuestoAsociacion = this.formatDataAsociacion(this.cliente.listaAltaccpuestoAsociacion)
+		this.listaAltaSinUso = this.cliente.listaAltaSinUso
+
+		console.log(this.listaAltaccpuestoAsociacion)
      
     },
     data: () => ({
 		listaCantidadTurnosPorSemana : {
 			numeroSemanaActual : 0,
 			listaNumeroSemanaDetalleTurno : [],
-			listaNumeroSemanaTipoAusencia : []
 		},
         listaNumeroPersonas : [],
-        listaUnidadAdmin : [],
+        listaAltaccpuestoAsociacion : [],
+        listaAltaSinUso : [],
+        listaUnidadAdmin : {
+			cantidadUnidadesPorTipo : [],
+			totalAdminClasificados: []
+		},
     })
 };
 </script>
 <style scoped>
+
 table{
     font-size: 10px;
 }
@@ -150,8 +186,27 @@ table{
     font-size: 11px;
 }
 
+ul.sinTipoLista {
+	list-style-type: none;
+}
+
+li.tituloLista {
+	text-align: start;
+	font-weight: bold;
+	text-decoration: underline
+}
+
+li.estiloLista {
+	text-align: start;
+}
+
 .errorMarca{
 	color : red;
+}
+
+i:hover {
+  background-color: #1976d2;
+  border-radius: 10px;
 }
 
 .errorMarcaWarning{
@@ -173,6 +228,15 @@ table{
 	color : #1976d2;
 	font-weight: bold;
 
+}
+
+.mejoraTooltipBoton {
+	height: 0px;
+}
+
+.mejoraTooltipIcono {
+	height: 0px;
+	width:  0px;
 }
 
 table {
