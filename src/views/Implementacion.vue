@@ -4,7 +4,12 @@
 	<v-main>
 		<v-container fluid>
 			<v-row>
-				<v-col v-for="objCliente in listaClientes" :key="objCliente.id" md="6" sm="12" lg="3">
+				<v-col>
+					<input type="text" v-model="search" placeholder="Buscar...." />
+				</v-col>
+			</v-row>
+			<v-row>
+				<v-col v-for="objCliente in filterClientes" :key="objCliente.id" md="6" sm="12" lg="3">
 					<card-cliente-implementacion :cliente="objCliente">{{objCliente.nombreCompleto}}</card-cliente-implementacion>
 				</v-col>
 			</v-row>
@@ -23,13 +28,20 @@ import _ from 'lodash'
 
 
 export default {
-  props: {
-    source: String
-  },
-  components: {
-    CardClienteImplementacion,
-    AppBar
-  },
+	props: {
+		source: String
+	},
+	components: {
+		CardClienteImplementacion,
+		AppBar
+	},
+	computed : {
+		filterClientes: function () {
+			return this.listaClientes.filter((objCliente) => {
+				return objCliente.nombreCompleto.match(this.search);
+			})
+		}
+	},
 	mounted : function() {
 		var direccion = window.location.href;
 		var ruta = "api.dashboard.test";
@@ -54,9 +66,10 @@ export default {
 			}
 		);
 	},
-  data: () => ({
-	sidebar: false,
-	listaClientes : [],
-  })
+	data: () => ({
+		sidebar: false,
+		search: '',
+		listaClientes : [],
+	})
 };
 </script>
