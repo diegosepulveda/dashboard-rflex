@@ -1,15 +1,15 @@
 <template>
   <v-app id="inspire">
       <app-bar></app-bar>
-    <v-main>
-      <v-container fluid>
-        <v-row>		
-			<v-col v-for="objCliente in listaClientes" :key="objCliente.id" md="6" sm="12" lg="3">
-				<card-cliente-implementacion :cliente="objCliente">{{objCliente.nombreCompleto}}</card-cliente-implementacion>
-			</v-col>
-        </v-row>
-      </v-container>
-    </v-main>
+	<v-main>
+		<v-container fluid>
+			<v-row>
+				<v-col v-for="objCliente in listaClientes" :key="objCliente.id" md="6" sm="12" lg="3">
+					<card-cliente-implementacion :cliente="objCliente">{{objCliente.nombreCompleto}}</card-cliente-implementacion>
+				</v-col>
+			</v-row>
+		</v-container>
+	</v-main>
     <v-footer color="indigo" app>
       <span class="white--text">&copy; 2020</span>
     </v-footer>

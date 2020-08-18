@@ -132,7 +132,7 @@ export default {
 			return _.map(_.groupBy(lista,'nombre'),function(valor){
 				return {
 					'nombre' : valor[0].nombre,
-					'cantidad' : _.find(valor,{'ocupado' : 1}).cantidad + '/' + _.find(valor,{'ocupado' : 0}).cantidad,
+					'cantidad' : _.get(_.find(valor,{'ocupado' : 1}),'cantidad',0) + '/' + _.get(_.find(valor,{'ocupado' : 0}),'cantidad',0),
 					'descripcion' : valor[0].descripcion
 				}
 			})
