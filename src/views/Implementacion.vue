@@ -55,7 +55,7 @@ export default {
 	computed : {
 		filterClientes: function () {
 			return this.listaClientes.filter((objCliente) => {
-				return _.toLower(objCliente.nombreCompleto).match(this.search);
+				return _.toLower(this.quitarTildes(objCliente.nombreCompleto)).match(this.search);
 			})
 		}
 	},
@@ -75,6 +75,11 @@ export default {
 		},
 		focusInput() {
 			this.$refs.busquedaTexto.focus();
+		},
+		quitarTildes(texto) {
+			return texto.normalize('NFD')
+				.replace(/([aeio])\u0301|(u)[\u0301\u0308]/gi,"$1$2")
+				.normalize();
 		}
 	},
 	mounted : function() {
