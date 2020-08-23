@@ -225,6 +225,11 @@
 							label="Selección de semana"
 							></v-combobox>
 					</v-col>
+					<v-col md="3">
+						<div>
+
+						</div>
+					</v-col>
 				</v-row>
 				<v-row v-if="ocultarInformacionYMostrarSpinner">
 
@@ -233,7 +238,6 @@
 						background-color="transparent"
 						color="blue"
 						grow
-						
 						>
 						<v-tab> Jefaturas </v-tab>
 						<v-tab> Gerencia </v-tab>
@@ -369,13 +373,15 @@ export default {
 				vm.listaUsoCompleta = data
 				vm.ocultarInformacionYMostrarSpinner = true
 
+				if(data.pop() !== undefined){
+					console.log('Hora Actualizacion',data.pop().horaActualizacion);
+				}
 				
 				vm.listaUsoJefatura = _.filter(data,{'tipo_segun_nombre': 'jefatura'});
 				vm.listaUsoGerencia = _.filter(data,{'tipo_segun_nombre': 'gerencia'});
 				vm.listaUsoJefaturaRRHH = _.filter(data,{'tipo_segun_nombre': 'jefatura_rrhh'});
 				vm.listaUsoUsuario = _.filter(data,{'tipo_segun_nombre': 'usuario'});
 				vm.listaUsoRflex = _.filter(data,{'tipo_segun_nombre': 'rFlex'});
-				console.log(data);
 
 
 				vm.listaNumeroSemanaAño = _.uniq(_.map(data,'numeroSemanaAño')).sort(function(a,b){return b-a})
@@ -753,13 +759,8 @@ export default {
             value: 'nombreUnidad',
           },
           { text: 'ID Unidad', value: 'unidad_idunidad' },
-          { text: 'Dias', value: 'diasNumeros' },
           { text: 'Nombre Dia', value: 'diasNombres' },
-          { text: 'Semana Año', value: 'numeroSemanaAño' },
-          { text: 'Cantidad', value: 'cantidadDias' },
-          { text: 'Fecha', value: 'fecha' },
-          { text: 'Semana', value: 'semana' },
-          { text: 'Actualizacion', value: 'horaActualizacion' },
+          { text: 'Cantidad Días', value: 'cantidadDias' },
         ],
         headersListaUsoJefatura: [
           {
@@ -768,23 +769,23 @@ export default {
             sortable: false,
             value: 'usuario',
           },
-          { text: 'tipo_segun_nombre', value: 'tipo_segun_nombre' },
+        //   { text: 'tipo_segun_nombre', value: 'tipo_segun_nombre' },
           { text: 'idunidad', value: 'idunidad' },
           { text: 'nombreUnidad', value: 'nombreUnidad' },
-          { text: 'tipoUnidad', value: 'tipoUnidad' },
-          { text: 'numeroSemanaAño', value: 'numeroSemanaAño' },
-          { text: 'minFecha', value: 'minFecha' },
-          { text: 'maxFecha', value: 'maxFecha' },
-          { text: 'sumaAuditoria', value: 'sumaAuditoria' },
-          { text: 'sumaWeb', value: 'sumaWeb' },
-          { text: 'sumaMobile', value: 'sumaMobile' },
-          { text: 'cantidadDias', value: 'cantidadDias' },
-          { text: 'diasNumeros', value: 'diasNumeros' },
-          { text: 'diasNombres', value: 'diasNombres' },
-          { text: 'diasNumeros_auditoria', value: 'diasNumeros_auditoria' },
-          { text: 'diasNumeros_web', value: 'diasNumeros_web' },
-          { text: 'diasNumeros_mobile', value: 'diasNumeros_mobile' },
-          { text: 'horaActualizacion', value: 'horaActualizacion' },
+        //   { text: 'tipoUnidad', value: 'tipoUnidad' },
+        //   { text: 'numeroSemanaAño', value: 'numeroSemanaAño' },
+        //   { text: 'minFecha', value: 'minFecha' },
+        //   { text: 'maxFecha', value: 'maxFecha' },
+          { text: 'Suma Login', value: 'sumaAuditoria' },
+          { text: 'Uso Web', value: 'sumaWeb' },
+          { text: 'Uso Mobile', value: 'sumaMobile' },
+          { text: 'Cantidad Días', value: 'cantidadDias' },
+        //   { text: 'diasNumeros', value: 'diasNumeros' },
+          { text: 'Días', value: 'diasNombres' },
+          { text: 'Días Login', value: 'diasNumeros_auditoria' },
+          { text: 'Días Web', value: 'diasNumeros_web' },
+          { text: 'Días Mobile', value: 'diasNumeros_mobile' },
+        //   { text: 'horaActualizacion', value: 'horaActualizacion' },
         ],
         headersListaErrores: [
           { text: 'Fecha', value: 'fecha' },

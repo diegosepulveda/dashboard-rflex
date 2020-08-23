@@ -25,7 +25,7 @@
 		</div>
         <v-row>		
 			<v-col v-for="objCliente in filterClientes" :key="objCliente.id" md="6" sm="12" lg="3">
-				<card-cliente :cliente="objCliente">{{objCliente.nombreCompleto}}</card-cliente>
+				<card-cliente :cliente="objCliente"><a target="_blank" :href="objCliente.link">{{objCliente.nombreCompleto}}</a></card-cliente>
 			</v-col>
         </v-row>
       </v-container>
@@ -101,7 +101,6 @@ export default {
 					vm.listaClientes.forEach(element => {
 						element.replica = _.find(listaClientesReplicas,{'nombre' : element.nombre}).replica;
 					});
-					
 				});
 				vm.listaClientes = datos;
 			}
