@@ -171,15 +171,15 @@
 				<v-row v-if="ocultarInformacionYMostrarSpinner">
 					<v-col md="3">
 						<v-combobox
-							v-model="seleccionSemanaUsoUnidades"
-							:items="listaNumeroSemanaAño"
+							v-model="mostrarSemana"
+							:items="objListaUsoUnidades.listaNumeroSemanaAño"
 							label="Selección de semana"
 							></v-combobox>
 					</v-col>
 				</v-row>
                 <v-data-table
                     :headers="headersListaUsoUnidades"
-                    :items="listaLoginUnidadesSemanaTablaVista"
+                    :items="objListaUsoUnidades.listaLoginUnidadesSemanaTablaVista"
                     :items-per-page="20"
                     class="elevation-1"
 					v-if="ocultarInformacionYMostrarSpinner"
@@ -220,8 +220,8 @@
 				<v-row v-if="ocultarInformacionYMostrarSpinner">
 					<v-col md="3">
 						<v-combobox
-							v-model="seleccionSemana"
-							:items="listaNumeroSemanaAño"
+							v-model="mostrarSemanaUsoTotal"
+							:items="objListaUsoTotal.listaNumeroSemanaAño"
 							label="Selección de semana"
 							></v-combobox>
 					</v-col>
@@ -250,7 +250,7 @@
 							<v-tab-item>
 								<v-data-table
 										:headers="headersListaUsoJefatura"
-										:items="listaUsoJefaturaVista"
+										:items="objListaUsoTotal.listaUsoJefaturaVista"
 										:items-per-page="20"
 										class="elevation-1"
 									></v-data-table>
@@ -259,7 +259,7 @@
 							<v-tab-item>
 								<v-data-table
 									:headers="headersListaUsoJefatura"
-									:items="listaUsoGerenciaVista"
+									:items="objListaUsoTotal.listaUsoGerenciaVista"
 									:items-per-page="20"
 									class="elevation-1"
 								></v-data-table>
@@ -267,7 +267,7 @@
 							<v-tab-item>
 								<v-data-table
 									:headers="headersListaUsoJefatura"
-									:items="listaUsoJefaturaRRHHVista"
+									:items="objListaUsoTotal.listaUsoJefaturaRRHHVista"
 									:items-per-page="20"
 									class="elevation-1"
 								></v-data-table>
@@ -275,7 +275,7 @@
 							<v-tab-item>
 								<v-data-table
 									:headers="headersListaUsoJefatura"
-									:items="listaUsoUsuarioVista"
+									:items="objListaUsoTotal.listaUsoUsuarioVista"
 									:items-per-page="20"
 									class="elevation-1"
 								></v-data-table>
@@ -283,7 +283,7 @@
 							<v-tab-item>
 								<v-data-table
 									:headers="headersListaUsoJefatura"
-									:items="listaUsoRflexVista"
+									:items="objListaUsoTotal.listaUsoRflexVista"
 									:items-per-page="20"
 									class="elevation-1"
 								></v-data-table>
@@ -355,9 +355,20 @@ export default {
 				return '#B2DFDB'
 			}
 			return undefined;
+		},
+		mostrarSemana : function(){
+			return window.moment(this.weekDateToDate(2020,this.seleccionSemanaUsoUnidades,0)).format('YYYY-MM-DD')+'-'+window.moment(this.weekDateToDate(2020,this.seleccionSemanaUsoUnidades,6)).format('YYYY-MM-DD');
+		},
+		mostrarSemanaUsoTotal : function(){
+			return window.moment(this.weekDateToDate(2020,this.seleccionSemana,0)).format('YYYY-MM-DD')+'-'+window.moment(this.weekDateToDate(2020,this.seleccionSemana,6)).format('YYYY-MM-DD');
 		}
 	},
     methods : {
+		weekDateToDate (year, week, day) {
+			const firstDayOfYear = new Date(year, 0, 1)
+			const days = 2 + day + (week - 1) * 7 - firstDayOfYear.getDay()
+			return new Date(year, 0, days)
+		},
         abrirModalUsoTotal() {
 			this.modalUsoTotalTipoUsuario = true
 			let vm = this;
@@ -377,17 +388,17 @@ export default {
 					console.log('Hora Actualizacion',data.pop().horaActualizacion);
 				}
 				
-				vm.listaUsoJefatura = _.filter(data,{'tipo_segun_nombre': 'jefatura'});
-				vm.listaUsoGerencia = _.filter(data,{'tipo_segun_nombre': 'gerencia'});
-				vm.listaUsoJefaturaRRHH = _.filter(data,{'tipo_segun_nombre': 'jefatura_rrhh'});
-				vm.listaUsoUsuario = _.filter(data,{'tipo_segun_nombre': 'usuario'});
-				vm.listaUsoRflex = _.filter(data,{'tipo_segun_nombre': 'rFlex'});
+				vm.objListaUsoTotal.listaUsoJefatura = _.filter(data,{'tipo_segun_nombre': 'jefatura'});
+				vm.objListaUsoTotal.listaUsoGerencia = _.filter(data,{'tipo_segun_nombre': 'gerencia'});
+				vm.objListaUsoTotal.listaUsoJefaturaRRHH = _.filter(data,{'tipo_segun_nombre': 'jefatura_rrhh'});
+				vm.objListaUsoTotal.listaUsoUsuario = _.filter(data,{'tipo_segun_nombre': 'usuario'});
+				vm.objListaUsoTotal.listaUsoRflex = _.filter(data,{'tipo_segun_nombre': 'rFlex'});
 
 
-				vm.listaNumeroSemanaAño = _.uniq(_.map(data,'numeroSemanaAño')).sort(function(a,b){return b-a})
-				if(vm.listaNumeroSemanaAño.length > 0)
+				vm.objListaUsoTotal.listaNumeroSemanaAño = _.uniq(_.map(data,'numeroSemanaAño')).sort(function(a,b){return b-a})
+				if(vm.objListaUsoTotal.listaNumeroSemanaAño.length > 0)
 				{
-					vm.seleccionSemana = vm.listaNumeroSemanaAño[0]
+					vm.seleccionSemana = vm.objListaUsoTotal.listaNumeroSemanaAño[0]
 				}
 			}).catch(function(error) {
 				vm.mostrarError = 'Hubo un problema con la petición Fetch:' + error
@@ -419,14 +430,14 @@ export default {
 				function(data){
 
 					//Con eso construyo el combobox
-					vm.listaNumeroSemanaAño = _.uniq(_.map(data,'numeroSemanaAño')).sort(function(a,b){return b-a})
-					if(vm.listaNumeroSemanaAño.length > 0)
+					vm.objListaUsoUnidades.listaNumeroSemanaAño = _.uniq(_.map(data,'numeroSemanaAño')).sort(function(a,b){return b-a})
+					if(vm.objListaUsoUnidades.listaNumeroSemanaAño.length > 0)
 					{
-						vm.seleccionSemanaUsoUnidades = vm.listaNumeroSemanaAño[0]
+						vm.seleccionSemanaUsoUnidades = vm.objListaUsoUnidades.listaNumeroSemanaAño[0]
 					}
 
 
-					vm.listaLoginUnidadesSemanaTabla = data
+					vm.objListaUsoUnidades.listaLoginUnidadesSemanaTabla = data
 					vm.ocultarInformacionYMostrarSpinner = true
 				}
 
@@ -624,14 +635,14 @@ export default {
 	},
 	watch: {
 		seleccionSemana: function (val) {			
-			this.listaUsoJefaturaVista = _.filter(this.listaUsoJefatura, {'numeroSemanaAño' : parseInt(val)});
-			this.listaUsoGerenciaVista = _.filter(this.listaUsoGerencia, {'numeroSemanaAño' : parseInt(val)});
-			this.listaUsoJefaturaRRHHVista = _.filter(this.listaUsoJefaturaRRHH, {'numeroSemanaAño' : parseInt(val)});
-			this.listaUsoUsuarioVista = _.filter(this.listaUsoUsuario, {'numeroSemanaAño' : parseInt(val)});
-			this.listaUsoRflexVista = _.filter(this.listaUsoRflex, {'numeroSemanaAño' : parseInt(val)});
+			this.objListaUsoTotal.listaUsoJefaturaVista = _.filter(this.objListaUsoTotal.listaUsoJefatura, {'numeroSemanaAño' : parseInt(val)});
+			this.objListaUsoTotal.listaUsoGerenciaVista = _.filter(this.objListaUsoTotal.listaUsoGerencia, {'numeroSemanaAño' : parseInt(val)});
+			this.objListaUsoTotal.listaUsoJefaturaRRHHVista = _.filter(this.objListaUsoTotal.listaUsoJefaturaRRHH, {'numeroSemanaAño' : parseInt(val)});
+			this.objListaUsoTotal.listaUsoUsuarioVista = _.filter(this.objListaUsoTotal.listaUsoUsuario, {'numeroSemanaAño' : parseInt(val)});
+			this.objListaUsoTotal.listaUsoRflexVista = _.filter(this.objListaUsoTotal.listaUsoRflex, {'numeroSemanaAño' : parseInt(val)});
 		},
 		seleccionSemanaUsoUnidades: function (val) {			
-			this.listaLoginUnidadesSemanaTablaVista = _.filter(this.listaLoginUnidadesSemanaTabla, {'numeroSemanaAño' : parseInt(val)});
+			this.objListaUsoUnidades.listaLoginUnidadesSemanaTablaVista = _.filter(this.objListaUsoUnidades.listaLoginUnidadesSemanaTabla, {'numeroSemanaAño' : parseInt(val)});
 		},
 	},
     mounted : function() {
@@ -714,13 +725,15 @@ export default {
         listaUltimasMarcas : [],
         listaNumeroPeriodos : [],
         listaUsoTipoUsuarioResumidaFront : [],
-        listaLoginUnidadesSemanaTabla : [],
-        listaLoginUnidadesSemanaTablaVista : [],
-        listaNumeroSemanaAño : [],
+		objListaUsoUnidades : {
+			listaLoginUnidadesSemanaTablaVista : [],
+			listaLoginUnidadesSemanaTabla : [],
+		},
         listaNumeroSemanaAñoFrontUsoResumido : [],
         listaUsoCompleta : [],
         listaConfirmadosCuentas : {
 			listaConfirmados : [],
+			listaNumeroSemanaAño : [],
 			listaTotalConfirmadosMobile : [],
 		},
         listaNumeroPersonas : [],
@@ -739,16 +752,20 @@ export default {
 			},
 			listaMostarFDA : []
 		},
-        listaUsoJefatura : [],
-        listaUsoGerencia : [],
-        listaUsoJefaturaRRHH : [],
-		listaUsoUsuario : [],
-		listaUsoRflex : [],
-		listaUsoJefaturaVista : [],
-        listaUsoGerenciaVista : [],
-        listaUsoJefaturaRRHHVista : [],
-		listaUsoUsuarioVista : [],
-		listaUsoRflexVista : [],
+		objListaUsoTotal : {
+			seleccionSemana : '',
+			listaNumeroSemanaAño : [],
+			listaUsoJefatura : [],
+			listaUsoGerencia : [],
+			listaUsoJefaturaRRHH : [],
+			listaUsoUsuario : [],
+			listaUsoRflex : [],
+			listaUsoJefaturaVista : [],
+			listaUsoGerenciaVista : [],
+			listaUsoJefaturaRRHHVista : [],
+			listaUsoUsuarioVista : [],
+			listaUsoRflexVista : [],
+		},
         listaErroresPorFecha : [],
         listaInconsistencia : [],
         headersListaUsoUnidades: [
