@@ -170,11 +170,19 @@
 				</v-row>
 				<v-row v-if="ocultarInformacionYMostrarSpinner">
 					<v-col md="3">
-						<v-combobox
-							v-model="mostrarSemana"
+						<v-select
+							v-model="seleccionSemanaUsoUnidades"
+							item-text="nombreFecha"
+							item-value="numeroSemana"
 							:items="objListaUsoUnidades.listaNumeroSemanaAño"
 							label="Selección de semana"
-							></v-combobox>
+							return-object
+							></v-select>
+					</v-col>
+					<v-col md="3">
+						<div>
+							{{objListaUsoUnidades.ultimaActualizacion}}
+						</div>
 					</v-col>
 				</v-row>
                 <v-data-table
@@ -219,15 +227,18 @@
 				</v-row>
 				<v-row v-if="ocultarInformacionYMostrarSpinner">
 					<v-col md="3">
-						<v-combobox
-							v-model="mostrarSemanaUsoTotal"
+						<v-select
+							v-model="seleccionSemana"
+							item-text="nombreFecha"
+							item-value="numeroSemana"
 							:items="objListaUsoTotal.listaNumeroSemanaAño"
 							label="Selección de semana"
-							></v-combobox>
+							return-object
+							></v-select>
 					</v-col>
 					<v-col md="3">
 						<div>
-
+							{{objListaUsoTotal.ultimaActualizacion}}
 						</div>
 					</v-col>
 				</v-row>
@@ -355,12 +366,6 @@ export default {
 				return '#B2DFDB'
 			}
 			return undefined;
-		},
-		mostrarSemana : function(){
-			return window.moment(this.weekDateToDate(2020,this.seleccionSemanaUsoUnidades,0)).format('YYYY-MM-DD')+'-'+window.moment(this.weekDateToDate(2020,this.seleccionSemanaUsoUnidades,6)).format('YYYY-MM-DD');
-		},
-		mostrarSemanaUsoTotal : function(){
-			return window.moment(this.weekDateToDate(2020,this.seleccionSemana,0)).format('YYYY-MM-DD')+'-'+window.moment(this.weekDateToDate(2020,this.seleccionSemana,6)).format('YYYY-MM-DD');
 		}
 	},
     methods : {
@@ -385,7 +390,7 @@ export default {
 				vm.ocultarInformacionYMostrarSpinner = true
 
 				if(data.pop() !== undefined){
-					console.log('Hora Actualizacion',data.pop().horaActualizacion);
+					vm.objListaUsoTotal.ultimaActualizacion = 'Hora Actualizacion '+data.pop().horaActualizacion
 				}
 				
 				vm.objListaUsoTotal.listaUsoJefatura = _.filter(data,{'tipo_segun_nombre': 'jefatura'});
@@ -395,9 +400,18 @@ export default {
 				vm.objListaUsoTotal.listaUsoRflex = _.filter(data,{'tipo_segun_nombre': 'rFlex'});
 
 
-				vm.objListaUsoTotal.listaNumeroSemanaAño = _.uniq(_.map(data,'numeroSemanaAño')).sort(function(a,b){return b-a})
+				//Con eso construyo el combobox
+				vm.objListaUsoTotal.listaNumeroSemanaAño = _.map(_.uniq(_.map(data,'numeroSemanaAño')).sort(function(a,b){return b-a}),function(valor){
+					return {
+							numeroSemana : valor,
+							nombreFecha : window.moment(vm.weekDateToDate((new Date).getFullYear(),valor,0)).format('YYYY-MM-DD')+' - '+window.moment(vm.weekDateToDate((new Date).getFullYear(),valor,6)).format('YYYY-MM-DD')
+						}
+				})
+
+
 				if(vm.objListaUsoTotal.listaNumeroSemanaAño.length > 0)
 				{
+					
 					vm.seleccionSemana = vm.objListaUsoTotal.listaNumeroSemanaAño[0]
 				}
 			}).catch(function(error) {
@@ -429,19 +443,28 @@ export default {
 			fetch("http://"+ruta+"/api/logunidad?cliente="+this.cliente.nombre).then((data)=>data.json()).then(
 				function(data){
 
+				if(data.pop() !== undefined) {
+					vm.objListaUsoUnidades.ultimaActualizacion = 'Hora Actualizacion '+data.pop().horaActualizacion
+				}
+
 					//Con eso construyo el combobox
-					vm.objListaUsoUnidades.listaNumeroSemanaAño = _.uniq(_.map(data,'numeroSemanaAño')).sort(function(a,b){return b-a})
+					vm.objListaUsoUnidades.listaNumeroSemanaAño = _.map(_.uniq(_.map(data,'numeroSemanaAño')).sort(function(a,b){return b-a}),function(valor){
+						return {
+								numeroSemana : valor,
+								nombreFecha : window.moment(vm.weekDateToDate((new Date).getFullYear(),valor,0)).format('YYYY-MM-DD')+' - '+window.moment(vm.weekDateToDate((new Date).getFullYear(),valor,6)).format('YYYY-MM-DD')
+							}
+					})
+
 					if(vm.objListaUsoUnidades.listaNumeroSemanaAño.length > 0)
 					{
+						// Con var no funciona pasa algo nada que ver...
 						vm.seleccionSemanaUsoUnidades = vm.objListaUsoUnidades.listaNumeroSemanaAño[0]
+						// vm.objListaUsoUnidades.listaLoginUnidadesSemanaTablaVista = _.filter(data, {'numeroSemanaAño' : parseInt(vm.seleccionSemanaUsoUnidades.numeroSemana)});
 					}
-
 
 					vm.objListaUsoUnidades.listaLoginUnidadesSemanaTabla = data
 					vm.ocultarInformacionYMostrarSpinner = true
 				}
-
-
 			)
 		},
 		mostrarUltimaAltaMarcaPermiso(estadoIntegraciones) {
@@ -635,14 +658,14 @@ export default {
 	},
 	watch: {
 		seleccionSemana: function (val) {			
-			this.objListaUsoTotal.listaUsoJefaturaVista = _.filter(this.objListaUsoTotal.listaUsoJefatura, {'numeroSemanaAño' : parseInt(val)});
-			this.objListaUsoTotal.listaUsoGerenciaVista = _.filter(this.objListaUsoTotal.listaUsoGerencia, {'numeroSemanaAño' : parseInt(val)});
-			this.objListaUsoTotal.listaUsoJefaturaRRHHVista = _.filter(this.objListaUsoTotal.listaUsoJefaturaRRHH, {'numeroSemanaAño' : parseInt(val)});
-			this.objListaUsoTotal.listaUsoUsuarioVista = _.filter(this.objListaUsoTotal.listaUsoUsuario, {'numeroSemanaAño' : parseInt(val)});
-			this.objListaUsoTotal.listaUsoRflexVista = _.filter(this.objListaUsoTotal.listaUsoRflex, {'numeroSemanaAño' : parseInt(val)});
+			this.objListaUsoTotal.listaUsoJefaturaVista = _.filter(this.objListaUsoTotal.listaUsoJefatura, {'numeroSemanaAño' : parseInt(val.numeroSemana)});
+			this.objListaUsoTotal.listaUsoGerenciaVista = _.filter(this.objListaUsoTotal.listaUsoGerencia, {'numeroSemanaAño' : parseInt(val.numeroSemana)});
+			this.objListaUsoTotal.listaUsoJefaturaRRHHVista = _.filter(this.objListaUsoTotal.listaUsoJefaturaRRHH, {'numeroSemanaAño' : parseInt(val.numeroSemana)});
+			this.objListaUsoTotal.listaUsoUsuarioVista = _.filter(this.objListaUsoTotal.listaUsoUsuario, {'numeroSemanaAño' : parseInt(val.numeroSemana)});
+			this.objListaUsoTotal.listaUsoRflexVista = _.filter(this.objListaUsoTotal.listaUsoRflex, {'numeroSemanaAño' : parseInt(val.numeroSemana)});
 		},
-		seleccionSemanaUsoUnidades: function (val) {			
-			this.objListaUsoUnidades.listaLoginUnidadesSemanaTablaVista = _.filter(this.objListaUsoUnidades.listaLoginUnidadesSemanaTabla, {'numeroSemanaAño' : parseInt(val)});
+		seleccionSemanaUsoUnidades: function (val) {
+			this.objListaUsoUnidades.listaLoginUnidadesSemanaTablaVista = _.filter(this.objListaUsoUnidades.listaLoginUnidadesSemanaTabla, {'numeroSemanaAño' : parseInt(val.numeroSemana)});
 		},
 	},
     mounted : function() {
@@ -718,14 +741,21 @@ export default {
 					'cantidad' : ''
 				},
         ocultarInformacionYMostrarSpinner: false,
-        seleccionSemana: '',
-        seleccionSemanaUsoUnidades: '',
+        seleccionSemana : {
+			'numeroSemana' : '',
+			'nombreFecha' : ''
+		},
+        seleccionSemanaUsoUnidades: {
+			'numeroSemana' : '',
+			'nombreFecha' : ''
+		},
         modalErorres: false,
         modalUsoTotalTipoUsuario: false,
         listaUltimasMarcas : [],
         listaNumeroPeriodos : [],
         listaUsoTipoUsuarioResumidaFront : [],
 		objListaUsoUnidades : {
+			ultimaActualizacion : '',
 			listaLoginUnidadesSemanaTablaVista : [],
 			listaLoginUnidadesSemanaTabla : [],
 		},
@@ -753,7 +783,7 @@ export default {
 			listaMostarFDA : []
 		},
 		objListaUsoTotal : {
-			seleccionSemana : '',
+			ultimaActualizacion : '',
 			listaNumeroSemanaAño : [],
 			listaUsoJefatura : [],
 			listaUsoGerencia : [],
