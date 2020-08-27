@@ -208,7 +208,7 @@
 
 	<v-dialog
         v-model="modalUsoTotalTipoUsuario"
-        max-width="1800px"
+        
       >
         <v-card>
           <v-card-title>
@@ -242,7 +242,7 @@
 						</div>
 					</v-col>
 				</v-row>
-				<v-row v-if="ocultarInformacionYMostrarSpinner">
+				<v-row style="display: block;"  v-if="ocultarInformacionYMostrarSpinner">
 
 					<v-tabs
 						v-model="tab"
@@ -816,23 +816,17 @@ export default {
             sortable: false,
             value: 'usuario',
           },
-        //   { text: 'tipo_segun_nombre', value: 'tipo_segun_nombre' },
           { text: 'idunidad', value: 'idunidad' },
           { text: 'nombreUnidad', value: 'nombreUnidad' },
-        //   { text: 'tipoUnidad', value: 'tipoUnidad' },
-        //   { text: 'numeroSemanaAño', value: 'numeroSemanaAño' },
-        //   { text: 'minFecha', value: 'minFecha' },
-        //   { text: 'maxFecha', value: 'maxFecha' },
+        
           { text: 'Suma Login', value: 'sumaAuditoria' },
           { text: 'Uso Web', value: 'sumaWeb' },
           { text: 'Uso Mobile', value: 'sumaMobile' },
           { text: 'Cantidad Días', value: 'cantidadDias' },
-        //   { text: 'diasNumeros', value: 'diasNumeros' },
           { text: 'Días', value: 'diasNombres' },
           { text: 'Días Login', value: 'diasNumeros_auditoria' },
           { text: 'Días Web', value: 'diasNumeros_web' },
           { text: 'Días Mobile', value: 'diasNumeros_mobile' },
-        //   { text: 'horaActualizacion', value: 'horaActualizacion' },
         ],
         headersListaErrores: [
           { text: 'Fecha', value: 'fecha' },
