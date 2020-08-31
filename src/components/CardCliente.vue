@@ -808,6 +808,7 @@ export default {
           { text: 'ID Unidad', value: 'unidad_idunidad' },
           { text: 'Nombre Dia', value: 'diasNombres' },
           { text: 'Cantidad Días', value: 'cantidadDias' },
+          { text: 'Ultimo Login', value: 'ultimoRegistro' },
         ],
         headersListaUsoJefatura: [
           {

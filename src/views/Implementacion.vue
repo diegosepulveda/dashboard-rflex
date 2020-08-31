@@ -2,6 +2,17 @@
   <v-app id="inspire">
       <app-bar></app-bar>
 	<v-main>
+		<v-container bg fill-height grid-list-md text-xs-center v-show="ocultarInformacionYMostrarSpinner">
+			<v-layout row wrap align-center>
+				<v-flex>
+					<v-progress-circular 
+						indeterminate
+						color="blue"
+						size="64"
+					></v-progress-circular>
+				</v-flex>
+			</v-layout>
+		</v-container>
 		<v-container fluid>
 			<GlobalEvents
 				@keydown.up="goUp"
@@ -90,12 +101,14 @@ export default {
 			ruta = "api.dashboard.kindall.io";
 		}
 		let vm = this; //this con arrow function funciona, pero sin se tiene que hacer esto
-		fetch("http://"+ruta+"/api/lista-clientes").then(
+		fetch("http://"+ruta+"/api/lista-clientes2").then(
 			function(data) {
+				vm.ocultarInformacionYMostrarSpinner = false;
 				return data.json()
 			}
 		).then(
 			function(datos) {
+				//Puede haber otro callback para la refatorzacion 
 				// fetch("http://"+ruta+"/api/replica-masiva").then((data)=>data.json()).then(function(listaClientesReplicas){
 				// 	vm.listaClientes.forEach(element => {
 				// 		element.replica = _.find(listaClientesReplicas,{'nombre' : element.nombre}).replica;
@@ -109,6 +122,7 @@ export default {
 	data: () => ({
 		searchBarIsOpen: false,
 		search: '',
+		ocultarInformacionYMostrarSpinner : true,
 		listaClientes : [],
 	})
 };

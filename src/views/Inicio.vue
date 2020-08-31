@@ -2,6 +2,17 @@
   <v-app id="inspire">
       <app-bar></app-bar>
     <v-main>
+		<v-container bg fill-height grid-list-md text-xs-center v-show="ocultarInformacionYMostrarSpinner">
+			<v-layout row wrap align-center>
+				<v-flex>
+					<v-progress-circular 
+						indeterminate
+						color="blue"
+						size="64"
+					></v-progress-circular>
+				</v-flex>
+			</v-layout>
+		</v-container>
       <v-container fluid>
 		<GlobalEvents
 				@keydown.up="goUp"
@@ -23,7 +34,7 @@
 				>
 			</div>
 		</div>
-        <v-row>		
+        <v-row>
 			<v-col v-for="objCliente in filterClientes" :key="objCliente.id" md="6" sm="12" lg="3">
 				<card-cliente :cliente="objCliente"><a target="_blank" :href="objCliente.link">{{objCliente.nombreCompleto}}</a></card-cliente>
 			</v-col>
@@ -91,8 +102,10 @@ export default {
 			ruta = "api.dashboard.kindall.io";
 		}
 		let vm = this; //this con arrow function funciona, pero sin se tiene que hacer esto
+
 		fetch("http://"+ruta+"/api/lista-clientes").then(
 			function(data) {
+				vm.ocultarInformacionYMostrarSpinner = false;
 				return data.json()
 			}
 		).then(
@@ -109,6 +122,7 @@ export default {
 	data: () => ({
 		searchBarIsOpen: false,
 		search: '',
+		ocultarInformacionYMostrarSpinner : true,
 		listaClientes : [],
 	})
 };
