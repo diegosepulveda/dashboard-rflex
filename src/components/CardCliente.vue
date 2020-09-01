@@ -105,16 +105,19 @@
 
           </v-col>
           <v-col>
-			<v-btn text @click="getDataInconsistencias()">Inconsistencias</v-btn>
+			<v-btn x-small color="primary" @click="getDataInconsistencias()">Inconsistencias</v-btn>
 			
-				<v-progress-circular v-show="!ocultarInformacionYMostrarSpinner && mostrarInconsistencias"
-						indeterminate
-						color="red"
-				></v-progress-circular>
+				
 					
 				<table v-show="ocultarInformacionYMostrarSpinner || mostrarInconsistencias">
 					<tr>
 						<td colspan="2" style="font-weight: bold;text-decoration: underline;">Inconsistencias</td>
+					</tr>
+					<tr>
+						<v-progress-circular v-show="!ocultarInformacionYMostrarSpinner && mostrarInconsistencias"
+								indeterminate
+								color="red"
+						></v-progress-circular>
 					</tr>
 
 					
@@ -343,6 +346,9 @@
 		<v-btn text @click="abrirModalUsoUnidades()">Uso Unidades</v-btn>
 		<v-btn text @click="abrirModalUsoTotal()">Uso Total</v-btn>
 		<v-btn text @click="abrirModalErrores()">Errores</v-btn>
+		<div style="font-weight: bold;">
+			{{cliente.version}}
+		</div>
     </v-card-actions>
   </v-card>
 </template>

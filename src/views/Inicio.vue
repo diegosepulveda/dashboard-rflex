@@ -115,6 +115,12 @@ export default {
 						element.replica = _.find(listaClientesReplicas,{'nombre' : element.nombre}).replica;
 					});
 				});
+
+				fetch("http://"+ruta+"/api/lista-version").then((data)=>data.json()).then(function(listaVersion){
+					vm.listaClientes.forEach((element,indice) => {
+						vm.$set(vm.listaClientes[indice], 'version', _.find(listaVersion,{'nombre' : element.nombre}).version)
+					});
+				});
 				vm.listaClientes = datos;
 			}
 		);
