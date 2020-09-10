@@ -51,6 +51,7 @@
 import CardCliente from "@/components/CardCliente.vue"
 import AppBar from "@/components/AppBar.vue"
 import _ from 'lodash'
+import { mapActions, mapState } from 'vuex'
 import GlobalEvents from "vue-global-events"
 
 
@@ -65,12 +66,18 @@ export default {
 		
 	},
 	computed : {
-		listaClientes : function () {
-			return this.$store.getters['listaClientes']
-		},
-		ocultarInformacionYMostrarSpinner : function () {
-			return this.$store.getters['ocultarInformacionYMostrarSpinner']
-		},
+		// ...mapState(['listaClientes','ocultarInformacionYMostrarSpinner']),
+
+		...mapState({
+			listaClientes : (state) => state.listaClientes,
+			ocultarInformacionYMostrarSpinner : (state) => state.ocultarInformacionYMostrarSpinner,
+		}),
+		// listaClientes : function () {
+		// 	return this.$store.getters['listaClientes']
+		// },
+		// ocultarInformacionYMostrarSpinner : function () {
+		// 	return this.$store.getters['ocultarInformacionYMostrarSpinner']
+		// },
 		filterClientes : function () {
 			return this.listaClientes.filter((objCliente) => {
 				return _.toLower(this.quitarTildes(objCliente.nombreCompleto)).match(this.search);
@@ -98,16 +105,12 @@ export default {
 			return texto.normalize('NFD')
 				.replace(/([aeio])\u0301|(u)[\u0301\u0308]/gi, "$1$2")
 				.normalize();
-		}
-	},
-	beforeUpdate : function () {
-		console.log('beforeUpdate')
-	},
-	updated : function () {
-		console.log('upadted');
+		},
+		...mapActions(['getListaClientes'])
 	},
 	mounted : function() {
-		this.$store.dispatch('getListaClientes')
+		// this.$store.dispatch('getListaClientes')
+		this.getListaClientes()
 	},
 	data: () => ({
 		searchBarIsOpen: false,
