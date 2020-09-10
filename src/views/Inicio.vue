@@ -48,10 +48,10 @@
 </template>
 
 <script>
-import CardCliente from "@/components/CardCliente.vue";
-import AppBar from "@/components/AppBar.vue";
+import CardCliente from "@/components/CardCliente.vue"
+import AppBar from "@/components/AppBar.vue"
 import _ from 'lodash'
-import GlobalEvents from "vue-global-events";
+import GlobalEvents from "vue-global-events"
 
 
 export default {
@@ -65,7 +65,13 @@ export default {
 		
 	},
 	computed : {
-		filterClientes: function () {
+		listaClientes : function () {
+			return this.$store.getters['listaClientes']
+		},
+		ocultarInformacionYMostrarSpinner : function () {
+			return this.$store.getters['ocultarInformacionYMostrarSpinner']
+		},
+		filterClientes : function () {
 			return this.listaClientes.filter((objCliente) => {
 				return _.toLower(this.quitarTildes(objCliente.nombreCompleto)).match(this.search);
 			})
@@ -88,48 +94,24 @@ export default {
 		focusInput() {
 			this.$refs.busquedaTexto.focus();
 		},
-		quitarTildes(texto) {
+		quitarTildes : function (texto) {
 			return texto.normalize('NFD')
-				.replace(/([aeio])\u0301|(u)[\u0301\u0308]/gi,"$1$2")
+				.replace(/([aeio])\u0301|(u)[\u0301\u0308]/gi, "$1$2")
 				.normalize();
 		}
 	},
+	beforeUpdate : function () {
+		console.log('beforeUpdate')
+	},
+	updated : function () {
+		console.log('upadted');
+	},
 	mounted : function() {
-		var direccion = window.location.href;
-		var ruta = "api.dashboard.test";
-		if(direccion.includes('kindall'))
-		{
-			ruta = "api.dashboard.kindall.io";
-		}
-		let vm = this; //this con arrow function funciona, pero sin se tiene que hacer esto
-
-		fetch("http://"+ruta+"/api/lista-clientes").then(
-			function(data) {
-				vm.ocultarInformacionYMostrarSpinner = false;
-				return data.json()
-			}
-		).then(
-			function(datos) {
-				fetch("http://"+ruta+"/api/replica-masiva").then((data)=>data.json()).then(function(listaClientesReplicas){
-					vm.listaClientes.forEach(element => {
-						element.replica = _.find(listaClientesReplicas,{'nombre' : element.nombre}).replica;
-					});
-				});
-
-				fetch("http://"+ruta+"/api/lista-version").then((data)=>data.json()).then(function(listaVersion){
-					vm.listaClientes.forEach((element,indice) => {
-						vm.$set(vm.listaClientes[indice], 'version', _.find(listaVersion,{'nombre' : element.nombre}).version)
-					});
-				});
-				vm.listaClientes = datos;
-			}
-		);
+		this.$store.dispatch('getListaClientes')
 	},
 	data: () => ({
 		searchBarIsOpen: false,
 		search: '',
-		ocultarInformacionYMostrarSpinner : true,
-		listaClientes : [],
 	})
 };
 </script>
