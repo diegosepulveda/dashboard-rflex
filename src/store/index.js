@@ -15,7 +15,7 @@ export default new Vuex.Store({
     //Computed propoerties, get a state from a vue store. Simple functions to get a state
     getters : {
         listaClientes (state){
-            return state.listaClientes           
+            return state.listaClientes
         },
         ocultarInformacionYMostrarSpinner (state) {
             return state.ocultarInformacionYMostrarSpinner
@@ -24,13 +24,13 @@ export default new Vuex.Store({
     //methods in a vue componentes
     //Very good spot to fetch data. Action call usualy should resolve into data
     actions : {
-        getListaClientes(context) {
+        getListaClientes({ commit }) {
             var direccion = window.location.href;
             var ruta = "api.dashboard.test";
             if (direccion.includes('kindall')) {
                 ruta = "api.dashboard.kindall.io";
             }
-            context.commit('setSpinner', true)
+            commit('setSpinner', true)
             let vm = this._vm;
 
             fetch("http://" + ruta + "/api/lista-clientes").then(
@@ -44,7 +44,7 @@ export default new Vuex.Store({
                         datos.forEach(element => {
                             element.replica = _.find(listaClientesReplicas, { 'nombre': element.nombre }).replica;
                         });
-                        // context.commit('setListaCliente', datos)
+                        // commit('setListaCliente', datos)
                     });
 
                     fetch("http://" + ruta + "/api/lista-version").then((data) => data.json()).then(function (listaVersion) {
@@ -57,13 +57,13 @@ export default new Vuex.Store({
                         // console.log('commit setListaCliente version',datos)
                         // console.log(vm)
                         
-                        // context.commit('setListaCliente', datos)
+                        // commit('setListaCliente', datos)
                         // Vue.nextTick();
                     });
                     
                     // listaClientes = datos;
-                    context.commit('setListaCliente', datos)
-                    context.commit('setSpinner', false)
+                    commit('setListaCliente', datos)
+                    commit('setSpinner', false)
                     
                 }
             );
