@@ -50,7 +50,6 @@ export default new Vuex.Store({
                     fetch("http://" + ruta + "/api/lista-version").then((data) => data.json()).then(function (listaVersion) {
                         datos.forEach((element,indice) => {
                             // element.version = _.find(listaVersion, { 'nombre': element.nombre }).version;
-                            console.log(vm);
                             vm.$set(datos[indice], 'version', _.find(listaVersion, { 'nombre': element.nombre }).version)
                             // vm.$nextTick()
                         });

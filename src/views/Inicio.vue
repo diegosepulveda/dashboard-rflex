@@ -53,6 +53,7 @@ import AppBar from "@/components/AppBar.vue"
 import _ from 'lodash'
 import { mapActions, mapState } from 'vuex'
 import GlobalEvents from "vue-global-events"
+import ClasePrueba from "@/classes/Prueba"
 
 
 export default {
@@ -111,6 +112,9 @@ export default {
 	mounted : function() {
 		// this.$store.dispatch('getListaClientes')
 		this.getListaClientes()
+
+		ClasePrueba.metodo1()
+
 	},
 	data: () => ({
 		searchBarIsOpen: false,
