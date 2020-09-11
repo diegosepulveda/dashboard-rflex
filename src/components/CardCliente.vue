@@ -395,8 +395,8 @@ export default {
 				vm.listaUsoCompleta = data
 				vm.ocultarInformacionYMostrarSpinner = true
 
-				if(data.pop() !== undefined){
-					vm.objListaUsoTotal.ultimaActualizacion = 'Hora Actualizacion '+data.pop().horaActualizacion
+				if(data[0] !== undefined){
+					vm.objListaUsoTotal.ultimaActualizacion = 'Hora Actualizacion '+data[0].horaActualizacion
 				}
 				
 				vm.objListaUsoTotal.listaUsoJefatura = _.filter(data,{'tipo_segun_nombre': 'jefatura'});
@@ -449,8 +449,8 @@ export default {
 			fetch("http://"+ruta+"/api/logunidad?cliente="+this.cliente.nombre).then((data)=>data.json()).then(
 				function(data){
 
-				if(data.pop() !== undefined) {
-					vm.objListaUsoUnidades.ultimaActualizacion = 'Hora Actualizacion '+data.pop().horaActualizacion
+				if(data[0] !== undefined) {
+					vm.objListaUsoUnidades.ultimaActualizacion = 'Hora Actualizacion '+data[0].horaActualizacion
 				}
 
 					//Con eso construyo el combobox
