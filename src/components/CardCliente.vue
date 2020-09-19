@@ -105,13 +105,14 @@
 
           </v-col>
           <v-col>
-			<v-btn x-small color="primary" @click="getDataInconsistencias()">Inconsistencias</v-btn>
+			<v-btn x-small color="primary" @click="getDataInconsistenciasRefresh()">Inconsistencias</v-btn>
 			
 				
 					
-				<table v-show="ocultarInformacionYMostrarSpinner || mostrarInconsistencias">
+				<!-- <table v-show="ocultarInformacionYMostrarSpinner || mostrarInconsistencias"> -->
+				<table >
 					<tr>
-						<td colspan="2" style="font-weight: bold;text-decoration: underline;">Inconsistencias</td>
+						<td colspan="2" style="font-weight: bold;text-decoration: underline;">Inconsistencias  {{cliente.listaInconsistencia[0].fechaActualizacion}}</td>
 					</tr>
 					<tr>
 						<v-progress-circular v-show="!ocultarInformacionYMostrarSpinner && mostrarInconsistencias"
@@ -121,7 +122,7 @@
 					</tr>
 
 					
-					<tr v-for="(item) in listaInconsistencia" :key="item.nombre + item.cantidad">
+					<tr v-for="(item) in cliente.listaInconsistencia" :key="item.nombre + item.cantidad">
 						<td>{{item.nombre}}</td>
 						<td>{{item.cantidad}}</td>
 					</tr>
@@ -642,7 +643,7 @@ export default {
 			return listaVacia
 			
 		},
-		getDataInconsistencias()
+		getDataInconsistenciasRefresh()
 		{
 			let vm = this;
 			var direccion = window.location.href;
@@ -655,7 +656,7 @@ export default {
 			vm.mostrarInconsistencias = true;
 			fetch("http://"+ruta+"/api/inconsistencias?cliente="+vm.cliente.nombre).then((data)=>data.json()).then(
 				function(data) {
-					vm.listaInconsistencia = data
+					vm.cliente.listaInconsistencia = data
 					vm.ocultarInformacionYMostrarSpinner = true;
 				}
 			)
