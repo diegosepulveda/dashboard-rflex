@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-app-bar app color="indigo" dark>
+        <v-app-bar app color="indigo" class="hola" dark>
             <v-app-bar-nav-icon @click.stop="sidebar = !sidebar"></v-app-bar-nav-icon>
             <v-toolbar-title>rFlex Dash</v-toolbar-title>
         </v-app-bar>
@@ -62,5 +62,11 @@ export default {
 </script>
 
 <style>
-
+.hola {
+      background: #9053c7;
+  background: -webkit-linear-gradient(-135deg, #17a2b8, #4158d0);
+  background: -o-linear-gradient(-135deg, #17a2b8, #4158d0);
+  background: -moz-linear-gradient(-135deg, #17a2b8, #4158d0);
+  background: linear-gradient(-135deg, #17a2b8, #4158d0);
+}
 </style>

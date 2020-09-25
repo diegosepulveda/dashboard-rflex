@@ -1,78 +1,70 @@
 <template>
   <v-app id="inspire">
-    <v-main>
-      <v-container
-        class="fill-height"
-        fluid
-      >
-        <v-row
-          align="center"
-          justify="center"
-        >
-          <v-col
-            cols="12"
-            sm="8"
-            md="4"
-          >
-            <v-card class="elevation-12">
-              <v-toolbar
-                color="primary"
-                dark
-                flat
-              >
-                <v-toolbar-title>Login form</v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      :href="source"
-                      icon
-                      large
-                      target="_blank"
-                      v-on="on"
-                    >
-                      <v-icon>mdi-code-tags</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Source</span>
-                </v-tooltip>
-              </v-toolbar>
-              <v-card-text>
-                <v-form>
-                  <v-text-field
-                    label="Login"
-                    v-model="user"
-                    prepend-icon="mdi-account"
-                    type="text"
-                  ></v-text-field>
+    <div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<div class="login100-pic js-tilt" data-tilt>
+					<img src="../assets/login/images/img-01.png" alt="IMG">
+				</div>
 
-                  <v-text-field
-                    id="password"
-                    label="Password"
-                    v-model="pass"
-                    prepend-icon="mdi-lock"
-                    type="password"
-                  ></v-text-field>
-                </v-form>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn @click="btnLogin()" color="primary">Login</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-main>
+				<div class="login100-form validate-form">
+					<span class="login100-form-title">
+						Login
+					</span>
+
+					<div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
+						<input class="input100" type="text"  v-model="user" placeholder="Usuario">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-envelope" aria-hidden="true"></i>
+						</span>
+					</div>
+
+					<div class="wrap-input100 validate-input" data-validate = "Password is required">
+						<input class="input100" type="password"  v-model="pass" placeholder="Password">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-lock" aria-hidden="true"></i>
+						</span>
+					</div>
+					
+					<div class="container-login100-form-btn">
+						<button @click="btnLogin()" class="login100-form-btn">
+							Login
+						</button>
+					</div>
+
+					<div  class="text-center p-t-12">
+						<span class="txt1">
+						</span>
+						<a class="txt2" href="#">
+							
+						</a>
+					</div>
+
+					<div  class="text-center p-t-136">
+						<a class="txt2" href="#">
+							
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
   </v-app>
 </template>
+
 
 <script>
     // import axios from "axios"
     export default {
         props: {
-        source: String,
-        },
+			source: String,
+		},
+		data : () => ({
+			user : '',
+			pass : ''
+		}),
         methods:{
 
             btnLogin() {
@@ -83,9 +75,13 @@
 
 				})
                 .then(() => this.$router.push('/inicio'))
-                
-                
             }
         }
     }
 </script>
+
+<style scoped>
+	@import '../assets/login/fonts/font-awesome-4.7.0/css/font-awesome.min.css';
+	@import '../assets/login/css/util.css';
+	@import '../assets/login/css/main.css';
+</style>
