@@ -82,7 +82,7 @@
 					'password' : pass,
 
 				})
-                .then(() => console.log('Termino',this.user,this.pass))
+                .then(() => this.$router.push('/inicio'))
                 
                 
             }

@@ -31,7 +31,6 @@ export default{
                         const user = resp.data.user
                         localStorage.setItem('token', token)
                         axios.defaults.headers.common['Authorization'] = token
-                        console.log(token,user);
                         commit('auth_success', token, user)
                         resolve(resp)
                     })
@@ -42,10 +41,14 @@ export default{
                     })
             })
         },
-
-
-
-
+        logout({ commit }) {
+            return new Promise((resolve) => {
+                commit('logout')
+                localStorage.removeItem('token')
+                delete axios.defaults.headers.common['Authorization']
+                resolve()
+            })
+        }
     },
     mutations: {
         auth_request(state) {

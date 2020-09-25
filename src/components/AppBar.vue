@@ -26,6 +26,17 @@
                 </v-list-item-title>
             </v-list-item-content>
             </v-list-item>
+            <v-list-item link>
+            <v-list-item-action>
+                <v-icon>mdi-account-arrow-right-outline</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+                <v-list-item-title>
+                    <div @click="logout()">Log Out</div>
+                <!-- <router-link to="Implementacion"></router-link> -->
+                </v-list-item-title>
+            </v-list-item-content>
+            </v-list-item>
         </v-list>
         </v-navigation-drawer>
     </div>
@@ -35,7 +46,18 @@
 export default {
     data: () => ({
         sidebar : false,
-    })
+    }),
+    computed : {
+      isLoggedIn : function(){ return this.$store.getters.isLoggedIn}
+    },
+    methods: {
+        logout : function(){
+            this.$store.dispatch('auth/logout')
+                .then(() => {
+                this.$router.push('/login')
+            })
+        }
+    }
 }
 </script>
 
