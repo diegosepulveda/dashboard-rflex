@@ -7,7 +7,7 @@
 					<img src="../assets/login/images/img-01.png" alt="IMG">
 				</div>
 
-				<div class="login100-form validate-form">
+				<form v-on:submit.prevent="onSubmit" class="login100-form validate-form">
 					<span class="login100-form-title">
 						Login
 					</span>
@@ -47,7 +47,7 @@
 							
 						</a>
 					</div>
-				</div>
+				</form>
 			</div>
 		</div>
 	</div>

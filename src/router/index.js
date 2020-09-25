@@ -5,10 +5,14 @@ import store from '@/store/index.js'
 Vue.use(VueRouter)
 
   const routes = [
+//   {
+//     path: '/',
+//     name: 'Home',
+//     component: () => import(/* webpackChunkName: "about" */ '../views/Inicio.vue')
+//   },
   {
     path: '/',
-    name: 'Home',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Inicio.vue')
+	redirect: '/login'
   },
   {
     path: '/inicio',

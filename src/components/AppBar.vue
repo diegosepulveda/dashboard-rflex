@@ -63,10 +63,10 @@ export default {
 
 <style>
 .hola {
-      background: #9053c7;
-  background: -webkit-linear-gradient(-135deg, #17a2b8, #4158d0);
-  background: -o-linear-gradient(-135deg, #17a2b8, #4158d0);
-  background: -moz-linear-gradient(-135deg, #17a2b8, #4158d0);
-  background: linear-gradient(-135deg, #17a2b8, #4158d0);
+    background: #9053c7;
+    background: -webkit-linear-gradient(-135deg, #17a2b8, #4158d0);
+    background: -o-linear-gradient(-135deg, #17a2b8, #4158d0);
+    background: -moz-linear-gradient(-135deg, #17a2b8, #4158d0);
+    background: linear-gradient(-135deg, #17a2b8, #4158d0);
 }
 </style>
