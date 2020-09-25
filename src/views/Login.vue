@@ -41,8 +41,7 @@
                 <v-form>
                   <v-text-field
                     label="Login"
-                    name="login"
-                    v-model="login"
+                    v-model="user"
                     prepend-icon="mdi-account"
                     type="text"
                   ></v-text-field>
@@ -51,7 +50,6 @@
                     id="password"
                     label="Password"
                     v-model="pass"
-                    name="password"
                     prepend-icon="mdi-lock"
                     type="password"
                   ></v-text-field>
@@ -70,7 +68,7 @@
 </template>
 
 <script>
-    import axios from "axios"
+    // import axios from "axios"
     export default {
         props: {
         source: String,
@@ -78,16 +76,15 @@
         methods:{
 
             btnLogin() {
-                console.log(this.login);
-                console.log(this.pass);
-                axios
-                .post('http://api.dashboard.test/api/login',{
-                    'name' : this.login,
-                    'password' : this.pass
-                })
-                .then(response => {
-                    console.log(response);
-                })
+				const { user, pass } = this //Interesante esta forma
+                this.$store.dispatch('auth/login',{
+					'name' : user,
+					'password' : pass,
+
+				})
+                .then(() => console.log('Termino',this.user,this.pass))
+                
+                
             }
         }
     }

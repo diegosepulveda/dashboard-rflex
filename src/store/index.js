@@ -1,5 +1,6 @@
 import Vue from "vue"
 import Vuex from "vuex"
+import auth from "@/store/auth"
 import _ from 'lodash'
 
 // import axios from "axios"
@@ -7,6 +8,9 @@ import _ from 'lodash'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
+    modules:{
+        auth
+    },
     // In a state we are keeping our data, and shared data between componentes
     state : {
         listaClientes : [],
