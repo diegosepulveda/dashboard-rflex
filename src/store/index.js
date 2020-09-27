@@ -2,8 +2,7 @@ import Vue from "vue"
 import Vuex from "vuex"
 import auth from "@/store/auth"
 import _ from 'lodash'
-
-// import axios from "axios"
+import axios from "axios"
 
 Vue.use(Vuex)
 
@@ -29,45 +28,35 @@ export default new Vuex.Store({
     //Very good spot to fetch data. Action call usualy should resolve into data
     actions : {
         getListaClientes({ commit }) {
-            var direccion = window.location.href;
-            var ruta = "api.dashboard.test";
-            if (direccion.includes('kindall')) {
-                ruta = "api.dashboard.kindall.io";
-            }
+            
             commit('setSpinner', true)
             let vm = this._vm;
 
-            fetch("http://" + ruta + "/api/lista-clientes").then(
+            axios.get("api/lista-clientes").
+            then(
                 function (data) {
-                    return data.json()
+                    return data.data
                 }
-            ).then(
+            ).
+            then(
                 function (datos) {
-
-                    fetch("http://" + ruta + "/api/replica-masiva").then((data) => data.json()).then(function (listaClientesReplicas) {
-                        datos.forEach(element => {
-                            element.replica = _.find(listaClientesReplicas, { 'nombre': element.nombre }).replica;
-                        });
-                        // commit('setListaCliente', datos)
-                    });
-
-                    fetch("http://" + ruta + "/api/lista-version").then((data) => data.json()).then(function (listaVersion) {
+                    axios.get("api/replica-masiva").
+                    then((data) => data.data).
+                    then(function (listaClientesReplicas) {
                         datos.forEach((element,indice) => {
-                            // element.version = _.find(listaVersion, { 'nombre': element.nombre }).version;
-                            vm.$set(datos[indice], 'version', _.find(listaVersion, { 'nombre': element.nombre }).version)
-                            // vm.$nextTick()
+                            vm.$set(datos[indice], 'replica', _.find(listaClientesReplicas, { 'nombre': element.nombre }).replica)
                         });
-                        // console.log('commit setListaCliente version',datos)
-                        // console.log(vm)
-                        
-                        // commit('setListaCliente', datos)
-                        // Vue.nextTick();
                     });
-                    
-                    // listaClientes = datos;
+
+                    axios.get("api/lista-version").
+                    then((data) => data.data).
+                    then(function (listaVersion) {
+                        datos.forEach((element,indice) => {
+                            vm.$set(datos[indice], 'version', _.find(listaVersion, { 'nombre': element.nombre }).version)
+                        });
+                    });
                     commit('setListaCliente', datos)
                     commit('setSpinner', false)
-                    
                 }
             );
         }

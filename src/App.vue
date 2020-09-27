@@ -10,26 +10,16 @@
 
 <script>
     export default {
-		created:function () {
-			this.$http.interceptors.response.use(function (params) {
-				console.log('paso aca1');
-				if (params.status === 401){
-					console.log('paso aca2');
-					this.$store.dispatch('auth/logout')
+		
+		created: function () {
+			let vm = this;
+			this.$http.interceptors.response.use(
+				
+				undefined, function (err) {
+				const originalRequest = err.config;
+				if (err.response.status === 401 && !originalRequest._retry) {
+					vm.$store.dispatch('auth/logout').then(() => vm.$router.push('/login'))
 				}
-			}, function (err) {
-			return new Promise(function (resolve, reject) {
-				if (err.status === 401){
-					this.$store.dispatch('auth/logout')
-					resolve()
-				}
-				if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
-					this.$store.dispatch('auth/logout')
-					resolve()
-				}
-				reject()
-				throw err;
-			});
 			});
 		}
     }
