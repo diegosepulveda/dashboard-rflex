@@ -10,22 +10,29 @@
 
 <script>
     export default {
-		created:function () {
+		
+		created: function () {
+			let vm = this;
 			this.$http.interceptors.response.use(
 				
 				undefined, function (err) {
-			return new Promise(function (resolve, reject) {
-				if (err.status === 401){
-					this.$store.dispatch('auth/logout')
-					resolve()
-				}
-				if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
-					this.$store.dispatch('auth/logout')
-					resolve()
-				}
-				reject()
-				throw err;
-			});
+					const originalRequest = err.config;
+					if (err.response.status === 401 && !originalRequest._retry) {
+						vm.$store.dispatch('auth/logout').then(() => vm.$router.push('/login'))
+					}
+
+				// return new Promise(function (resolve, reject) {
+				// 	if (err.status === 401){
+				// 		this.$store.dispatch('auth/logout').then(() => this.$router.push('/inicio'))
+				// 		resolve()
+				// 	}
+				// 	if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
+				// 		this.$store.dispatch('auth/logout')
+				// 		resolve()
+				// 	}
+				// 	reject()
+				// 	throw err;
+				// });
 			});
 		}
     }
