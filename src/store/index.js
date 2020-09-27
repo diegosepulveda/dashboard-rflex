@@ -47,8 +47,8 @@ export default new Vuex.Store({
                     axios.get("http://" + ruta + "/api/replica-masiva").
                     then((data) => data.data).
                     then(function (listaClientesReplicas) {
-                        datos.forEach(element => {
-                            element.replica = _.find(listaClientesReplicas, { 'nombre': element.nombre }).replica;
+                        datos.forEach((element,indice) => {
+                            vm.$set(datos[indice], 'replica', _.find(listaClientesReplicas, { 'nombre': element.nombre }).replica)
                         });
                     });
 
@@ -59,11 +59,8 @@ export default new Vuex.Store({
                             vm.$set(datos[indice], 'version', _.find(listaVersion, { 'nombre': element.nombre }).version)
                         });
                     });
-                    
-                    // listaClientes = datos;
                     commit('setListaCliente', datos)
                     commit('setSpinner', false)
-                    
                 }
             );
         }
