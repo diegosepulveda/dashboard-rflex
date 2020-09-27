@@ -392,7 +392,7 @@ export default {
 			}
 			vm.mostrarError = ''
 			vm.ocultarInformacionYMostrarSpinner = false
-			fetch("http://"+ruta+"/api/uso-total?cliente="+this.cliente.nombre).then((data)=>data.json()).then(function(data) {
+			this.$http.get("http://"+ruta+"/api/uso-total?cliente="+this.cliente.nombre).then(data=>data.data).then(function(data) {
 				vm.listaUsoCompleta = data
 				vm.ocultarInformacionYMostrarSpinner = true
 
