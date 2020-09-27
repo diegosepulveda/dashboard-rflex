@@ -94,27 +94,11 @@ export default {
 		}
 	},
 	mounted : function() {
-		var direccion = window.location.href;
-		var ruta = "api.dashboard.test";
-		if(direccion.includes('kindall'))
-		{
-			ruta = "api.dashboard.kindall.io";
-		}
+		
 		let vm = this; //this con arrow function funciona, pero sin se tiene que hacer esto
-		fetch("http://"+ruta+"/api/lista-clientes2").then(
-			function(data) {
-				vm.ocultarInformacionYMostrarSpinner = false;
-				return data.json()
-			}
-		).then(
+		this.$http.get("api/lista-clientes2").then(data =>data.data).then(
 			function(datos) {
-				//Puede haber otro callback para la refatorzacion 
-				// fetch("http://"+ruta+"/api/replica-masiva").then((data)=>data.json()).then(function(listaClientesReplicas){
-				// 	vm.listaClientes.forEach(element => {
-				// 		element.replica = _.find(listaClientesReplicas,{'nombre' : element.nombre}).replica;
-				// 	});
-					
-				// });
+				vm.ocultarInformacionYMostrarSpinner = false;
 				vm.listaClientes = datos;
 			}
 		);

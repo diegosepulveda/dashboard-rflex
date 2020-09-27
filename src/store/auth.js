@@ -12,20 +12,10 @@ export default{
         authStatus: state => state.status,
     },
     actions: {
-        //Metodo antiugo
-        // login(context,data){
-        //     console.log(context,data);
-        //     axios
-        //         .post('http://api.dashboard.test/api/login', data)
-        //         .then(response => {
-        //             console.log(context, data);
-        //             console.log(response);
-        //         })
-        // },
         login({ commit }, user) {
-            return new Promise((resolve, reject) => { //Me queda la duda de que xq se hace una promise encima
+            return new Promise((resolve, reject) => {
                 commit('auth_request')
-                axios({ url: 'http://api.dashboard.test/api/login', data: user, method: 'POST' })
+                axios({ url: '/api/login', data: user, method: 'POST' })
                     .then(resp => {
                         const token = resp.data.access_token
                         const user = resp.data.user

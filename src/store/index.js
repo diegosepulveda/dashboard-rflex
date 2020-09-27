@@ -28,15 +28,11 @@ export default new Vuex.Store({
     //Very good spot to fetch data. Action call usualy should resolve into data
     actions : {
         getListaClientes({ commit }) {
-            var direccion = window.location.href;
-            var ruta = "api.dashboard.test";
-            if (direccion.includes('kindall')) {
-                ruta = "api.dashboard.kindall.io";
-            }
+            
             commit('setSpinner', true)
             let vm = this._vm;
 
-            axios.get("http://" + ruta + "/api/lista-clientes").
+            axios.get("api/lista-clientes").
             then(
                 function (data) {
                     return data.data
@@ -44,7 +40,7 @@ export default new Vuex.Store({
             ).
             then(
                 function (datos) {
-                    axios.get("http://" + ruta + "/api/replica-masiva").
+                    axios.get("api/replica-masiva").
                     then((data) => data.data).
                     then(function (listaClientesReplicas) {
                         datos.forEach((element,indice) => {
@@ -52,7 +48,7 @@ export default new Vuex.Store({
                         });
                     });
 
-                    axios.get("http://" + ruta + "/api/lista-version").
+                    axios.get("api/lista-version").
                     then((data) => data.data).
                     then(function (listaVersion) {
                         datos.forEach((element,indice) => {

@@ -384,15 +384,9 @@ export default {
         abrirModalUsoTotal() {
 			this.modalUsoTotalTipoUsuario = true
 			let vm = this;
-			var direccion = window.location.href;
-			var ruta = "api.dashboard.test";
-			if(direccion.includes('kindall'))
-			{
-				ruta = "api.dashboard.kindall.io";
-			}
 			vm.mostrarError = ''
 			vm.ocultarInformacionYMostrarSpinner = false
-			this.$http.get("http://"+ruta+"/api/uso-total?cliente="+this.cliente.nombre).then(data=>data.data).then(function(data) {
+			this.$http.get("api/uso-total?cliente="+this.cliente.nombre).then(data=>data.data).then(function(data) {
 				vm.listaUsoCompleta = data
 				vm.ocultarInformacionYMostrarSpinner = true
 
@@ -422,32 +416,20 @@ export default {
 					vm.seleccionSemana = vm.objListaUsoTotal.listaNumeroSemanaAño[0]
 				}
 			}).catch(function(error) {
-				vm.mostrarError = 'Hubo un problema con la petición Fetch:' + error
-				console.log('Hubo un problema con la petición Fetch:' + error);
+				vm.mostrarError = 'Hubo un problema con la petición al API:' + error
+				console.log('Hubo un problema con la petición al API:' + error);
 			});
 		},
 		abrirModalErrores() {
-			var direccion = window.location.href;
-			var ruta = "api.dashboard.test";
-			if(direccion.includes('kindall'))
-			{
-				ruta = "api.dashboard.kindall.io";
-			}
 			this.modalErorres = true
-			fetch("http://"+ruta+"/api/errores?cliente="+this.cliente.nombre).then((data)=>data.json()).then((data)=>this.listaErroresPorFecha = data)
+			this.$http.get("api/errores?cliente="+this.cliente.nombre).then(data=>data.data).then((data)=>this.listaErroresPorFecha = data)
 
 		},
 		abrirModalUsoUnidades() {
-			var direccion = window.location.href;
 			let vm = this;
-			var ruta = "api.dashboard.test";
-			if(direccion.includes('kindall'))
-			{
-				ruta = "api.dashboard.kindall.io";
-			}
 			this.modalUso = true
 			vm.ocultarInformacionYMostrarSpinner = false
-			fetch("http://"+ruta+"/api/logunidad?cliente="+this.cliente.nombre).then((data)=>data.json()).then(
+			this.$http.get("api/logunidad?cliente="+this.cliente.nombre).then(data=>data.data).then(
 				function(data){
 
 				if(data[0] !== undefined) {
@@ -646,15 +628,9 @@ export default {
 		getDataInconsistenciasRefresh()
 		{
 			let vm = this;
-			var direccion = window.location.href;
-			var ruta = "api.dashboard.test";
 			vm.ocultarInformacionYMostrarSpinner = false;
-			if(direccion.includes('kindall'))
-			{
-				ruta = "api.dashboard.kindall.io";
-			}
 			vm.mostrarInconsistencias = true;
-			fetch("http://"+ruta+"/api/inconsistencias?cliente="+vm.cliente.nombre).then((data)=>data.json()).then(
+			this.$http.get("api/inconsistencias?cliente="+vm.cliente.nombre).then(data=>data.data).then(
 				function(data) {
 					vm.cliente.listaInconsistencia = data
 					vm.ocultarInformacionYMostrarSpinner = true;
