@@ -11,13 +11,9 @@
 <script>
     export default {
 		created:function () {
-			this.$http.interceptors.response.use(function (params) {
-				console.log('paso aca1');
-				if (params.status === 401){
-					console.log('paso aca2');
-					this.$store.dispatch('auth/logout')
-				}
-			}, function (err) {
+			this.$http.interceptors.response.use(
+				
+				undefined, function (err) {
 			return new Promise(function (resolve, reject) {
 				if (err.status === 401){
 					this.$store.dispatch('auth/logout')
