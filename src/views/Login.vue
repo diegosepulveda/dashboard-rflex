@@ -83,9 +83,18 @@
 				// Me faltan estas cosas
 				// Poder guardar el token, que me da google, definir la expiracion
 				var provider = new firebase.auth.GoogleAuthProvider();
-				
-				firebase.auth().signInWithPopup(provider).then(function(result) {
-					console.log(result);
+				var vm = this;
+				firebase.auth().signInWithPopup(provider).then(async function(result) {
+					// console.log(result.credential.idToken); // No es este token
+					let idToken;
+					await firebase.auth().currentUser.getIdToken(true).then(res => idToken = res);
+					console.log(idToken); // Este el token
+					// console.log(result);
+					vm.$store.dispatch('auth/loginGoogle',{
+						'idToken' : idToken,
+						'user' : result.user.email
+					})
+					.then(() => vm.$router.push('/inicio'))
 				// This gives you a Google Access Token. You can use it to access the Google API.
 				// var token = result.credential.accessToken;
 				// The signed-in user info.

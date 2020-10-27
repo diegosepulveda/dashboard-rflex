@@ -31,6 +31,27 @@ export default{
                     })
             })
         },
+        loginGoogle({ commit }, idToken) {
+            commit('auth_request')
+            return new Promise((resolve, reject) => {
+                axios({ url: '/api/login-google', data: idToken, method: 'POST' })
+                    .then(resp => {
+
+                        const token = resp.data.access_token
+                        const user = resp.data.user
+                        console.log(resp.data);
+                        localStorage.setItem('token', token)
+                        axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
+                        commit('auth_success', token, user)
+
+
+                        resolve(resp)
+                    })
+                    .catch(err => {
+                        reject(err)
+                    })
+            })
+        },
         logout({ commit }) {
             return new Promise((resolve) => {
                 commit('logout')
