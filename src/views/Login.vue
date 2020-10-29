@@ -32,9 +32,11 @@
 						<button @click="btnLogin()" class="login100-form-btn">
 							Login
 						</button>
-						<button @click="btnLoginGoogle()" class="login100-form-btn">
-							Google
-						</button>
+					</div>
+
+					<div id="customBtn" @click="btnLoginGoogle()">
+							<span class="icon"></span>
+							<span class="buttonText">Log In</span>
 					</div>
 
 					<div  class="text-center p-t-12">
@@ -59,11 +61,12 @@
 
 
 <script>
-	// import axios from "axios"
 	import firebase from "@/plugins/firebaseConfig"
     export default {
         props: {
 			source: String,
+		},
+		components : {
 		},
 		data : () => ({
 			user : '',
@@ -88,7 +91,7 @@
 					// console.log(result.credential.idToken); // No es este token
 					let idToken;
 					await firebase.auth().currentUser.getIdToken(true).then(res => idToken = res);
-					console.log(idToken); // Este el token
+					// console.log(idToken); // Este el token
 					// console.log(result);
 					vm.$store.dispatch('auth/loginGoogle',{
 						'idToken' : idToken,
@@ -120,4 +123,41 @@
 	@import '../assets/login/fonts/font-awesome-4.7.0/css/font-awesome.min.css';
 	@import '../assets/login/css/util.css';
 	@import '../assets/login/css/main.css';
+
+	#customBtn {
+		cursor: pointer;
+    display: inline-block;
+    background: white;
+    color: #444;
+	margin-top: 20px;
+    width: 290px;
+    border-radius: 20px;
+    border: thin solid #888;
+    box-shadow: 1px 1px 1px grey;
+    white-space: nowrap;
+}
+span.icon {
+    background: url(https://developers-dot-devsite-v2-prod.appspot.com/identity/sign-in/g-normal.png) transparent 5px 50% no-repeat;
+    display: inline-block;
+    vertical-align: middle;
+    width: 70px;
+    height: 44px;
+}
+
+#customBtn {
+  transition: box-shadow .3s;
+}
+#customBtn:hover {
+  box-shadow: 0 0 11px rgba(33,33,33,.2); 
+}
+
+span.buttonText {
+    display: inline-block;
+    vertical-align: middle;
+    padding-left: 12px;
+    padding-right: 42px;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: 'Roboto', sans-serif;
+}
 </style>
