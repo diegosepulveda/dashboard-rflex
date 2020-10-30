@@ -13,7 +13,7 @@ Vue.config.productionTip = false
 var direccion = window.location.href;
 var ruta = "http://api.dashboard.test/";
 if (direccion.includes('kindall')) {
-	ruta = "http://api.dashboard.kindall.io/";
+	ruta = "https://api.dashboard.kindall.io/";
 }
 
 axios.defaults.baseURL = ruta;
