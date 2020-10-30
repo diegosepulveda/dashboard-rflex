@@ -130,7 +130,7 @@
     background: white;
     color: #444;
 	margin-top: 20px;
-    width: 290px;
+    width: 100%;
     border-radius: 20px;
     border: thin solid #888;
     box-shadow: 1px 1px 1px grey;
