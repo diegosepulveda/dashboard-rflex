@@ -112,7 +112,7 @@
 				<!-- <table v-show="ocultarInformacionYMostrarSpinner || mostrarInconsistencias"> -->
 				<table >
 					<tr>
-						<td colspan="2" style="font-weight: bold;text-decoration: underline;">Inconsistencias  {{cliente.listaInconsistencia[0].fechaActualizacion}}</td>
+						<td colspan="2" style="font-weight: bold;text-decoration: underline;">Inconsistencias  {{listaInconsistenciaUltimaFechaActualizacion}}</td>
 					</tr>
 					<tr>
 						<v-progress-circular v-show="!ocultarInformacionYMostrarSpinner && mostrarInconsistencias"
@@ -633,6 +633,7 @@ export default {
 			this.$http.get("api/inconsistencias?cliente="+vm.cliente.nombre).then(data=>data.data).then(
 				function(data) {
 					vm.cliente.listaInconsistencia = data
+					vm.listaInconsistenciaUltimaFechaActualizacion = data[0] !== undefined ? data[0].ultimaActualizacion : null
 					vm.ocultarInformacionYMostrarSpinner = true;
 				}
 			)
@@ -781,6 +782,7 @@ export default {
 		},
         listaErroresPorFecha : [],
         listaInconsistencia : [],
+        listaInconsistenciaUltimaFechaActualizacion : null,
         headersListaUsoUnidades: [
           {
             text: 'Nombre Unidad',
