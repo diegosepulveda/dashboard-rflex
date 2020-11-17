@@ -28,6 +28,16 @@
             </v-list-item>
             <v-list-item link>
             <v-list-item-action>
+                <v-icon>mdi-card-text-outline</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+                <v-list-item-title>
+                <router-link to="Producto">Producto</router-link>
+                </v-list-item-title>
+            </v-list-item-content>
+            </v-list-item>
+            <v-list-item link>
+            <v-list-item-action>
                 <v-icon>mdi-account-arrow-right-outline</v-icon>
             </v-list-item-action>
             <v-list-item-content>
