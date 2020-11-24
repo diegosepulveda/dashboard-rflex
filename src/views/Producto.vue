@@ -15,13 +15,14 @@
 		</v-container>
       <v-container fluid>
         <v-row>
-            <v-col>
+            <v-col md="6">
                 <v-card
                     class="mx-auto"
-                >  
+                >
+
                     <v-row>
-                        <v-col md="12">
-                            <v-col offset="9" md="3">
+                        <!-- <v-col md="12"> -->
+                            <v-col md="6">
                                 <v-select
                                     v-model="seleccionListaDropDownDias"
                                     item-text="nombreFecha"
@@ -31,7 +32,7 @@
                                     return-object
                                     ></v-select>
                             </v-col>
-                        </v-col>
+                        <!-- </v-col> -->
                         <!-- <v-col md="3">
                             <v-select
                                 v-model="seleccionSemana"
@@ -65,7 +66,7 @@
                         <v-col md="12">
                             <table>
                                 <tr>
-                                    <td colspan="3"># {{seleccionListaDropDownDias}} dias</td>
+                                    <th colspan="3"># {{seleccionListaDropDownDias}} días</th>
                                     <td>Gerencia</td>
                                     <td>Jefatura</td>
                                     <td>Usuario</td>
@@ -83,7 +84,7 @@
                         <v-col md="12">
                             <table>
                                 <tr>
-                                    <td colspan="3"># {{seleccionListaDropDownDias}} dias</td>
+                                    <th colspan="3"># {{seleccionListaDropDownDias}} días</th>
                                     <td>Jefatura</td>
                                     <td>Usuario</td>
                                 </tr>
@@ -112,7 +113,7 @@
                 </v-card>
             </v-col>
 
-            <v-col>
+            <v-col md="6">
                 <v-card
                     max-width="450"
                     class="mx-auto"
@@ -246,5 +247,7 @@ export default {
 };
 </script>
 <style scoped>
-
+.v-card {
+    padding: 12px;
+}
 </style>
