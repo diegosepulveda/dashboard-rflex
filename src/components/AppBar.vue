@@ -28,7 +28,7 @@
             </v-list-item>
             <v-list-item link>
             <v-list-item-action>
-                <v-icon>mdi-card-text-outline</v-icon>
+                <v-icon>mdi-pencil-ruler</v-icon>
             </v-list-item-action>
             <v-list-item-content>
                 <v-list-item-title>
