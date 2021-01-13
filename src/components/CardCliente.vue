@@ -400,12 +400,13 @@ export default {
 				vm.objListaUsoTotal.listaUsoUsuario = _.filter(data,{'tipo_segun_nombre': 'usuario'});
 				vm.objListaUsoTotal.listaUsoRflex = _.filter(data,{'tipo_segun_nombre': 'rFlex'});
 
-
 				//Con eso construyo el combobox
-				vm.objListaUsoTotal.listaNumeroSemanaAño = _.map(_.uniq(_.map(data,'numeroSemanaAño')).sort(function(a,b){return b-a}),function(valor){
+				vm.objListaUsoTotal.listaNumeroSemanaAño = _.map(_.uniq(_.map(data,obj => obj.numeroSemanaAño+"/"+obj.año+"/"+obj.minFecha)).sort((fecha1,fecha2) => window.moment(fecha2.split("/")[2]).unix() - window.moment(fecha1.split("/")[2]).unix()),function(valor){
+					var numeroSemana = parseInt(valor.split("/")[0]);
+					var año = parseInt(valor.split("/")[1]);
 					return {
-							numeroSemana : valor,
-							nombreFecha : window.moment(vm.weekDateToDate((new Date).getFullYear(),valor,0)).format('YYYY-MM-DD')+' - '+window.moment(vm.weekDateToDate((new Date).getFullYear(),valor,6)).format('YYYY-MM-DD')
+							numeroSemana : numeroSemana,
+							nombreFecha : window.moment(vm.weekDateToDate(año,numeroSemana,0)).format('YYYY-MM-DD')+' - '+window.moment(vm.weekDateToDate(año,numeroSemana,6)).format('YYYY-MM-DD')
 						}
 				})
 
