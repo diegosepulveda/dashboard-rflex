@@ -376,10 +376,15 @@ export default {
 		}
 	},
     methods : {
-		weekDateToDate (year, week, day) {
-			const firstDayOfYear = new Date(year, 0, 1)
-			const days = 2 + day + (week - 1) * 7 - firstDayOfYear.getDay()
-			return new Date(year, 0, days)
+		getDateOfISOWeek(w, y) {
+			var simple = new Date(y, 0, 1 + (w - 1) * 7);
+			var dow = simple.getDay();
+			var ISOweekStart = simple;
+			if (dow <= 4)
+				ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+			else
+				ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+			return ISOweekStart;
 		},
         abrirModalUsoTotal() {
 			this.modalUsoTotalTipoUsuario = true
@@ -404,9 +409,11 @@ export default {
 				vm.objListaUsoTotal.listaNumeroSemanaAño = _.map(_.uniq(_.map(data,'año')).sort(function(a,b){return b-a}),function(valor){
 					var año = valor.toString().substring(0,4);
 					var semana = valor.toString().slice(4,6);
+					var fechaInicioSemana = window.moment(vm.getDateOfISOWeek(semana,año)).format('YYYY-MM-DD');
+					var fechaTerminoSemana = window.moment(vm.getDateOfISOWeek(semana,año)).endOf('week').format('YYYY-MM-DD');
 					return {
 							numeroSemana : semana,
-							nombreFecha : window.moment(vm.weekDateToDate(año,semana,0)).format('YYYY-MM-DD')+' - '+window.moment(vm.weekDateToDate(año,semana,6)).format('YYYY-MM-DD')
+							nombreFecha : fechaInicioSemana+' - '+fechaTerminoSemana
 						}
 				})
 
@@ -439,9 +446,11 @@ export default {
 
 					//Con eso construyo el combobox
 					vm.objListaUsoUnidades.listaNumeroSemanaAño = _.map(_.uniq(_.map(data,'numeroSemanaAño')).sort(function(a,b){return b-a}),function(valor){
+						var fechaInicioSemana = window.moment(vm.getDateOfISOWeek(valor,(new Date).getFullYear())).format('YYYY-MM-DD');
+						var fechaTerminoSemana = window.moment(vm.getDateOfISOWeek(valor,(new Date).getFullYear())).endOf('week').format('YYYY-MM-DD');
 						return {
 								numeroSemana : valor,
-								nombreFecha : window.moment(vm.weekDateToDate((new Date).getFullYear(),valor,0)).format('YYYY-MM-DD')+' - '+window.moment(vm.weekDateToDate((new Date).getFullYear(),valor,6)).format('YYYY-MM-DD')
+								nombreFecha : fechaInicioSemana+' - '+fechaTerminoSemana
 							}
 					})
 
